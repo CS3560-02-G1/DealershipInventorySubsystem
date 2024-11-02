@@ -15,9 +15,22 @@ public class Customer {
         this.email = email;
     }
 
-    // updates customer's contact information
-    public void updateContactInfo(String newPhone, String newEmail) {
+    public void setName(String newName) {
+        this.name = newName;
+    }
+
+    // update customer's phone number
+    public void setPhoneNumber(String newPhone) {
         this.phoneNumber = newPhone;
+    }
+
+    // update customer's address
+    public void setAddress(String newAddress) {
+        this.address = newAddress;
+    }
+
+    // update customer's email
+    public void setEmail(String newEmail) {
         this.email = newEmail;
     }
 
@@ -27,6 +40,7 @@ public class Customer {
     }
 
     // checks if email is valid
+    // may need to use regex in the future or just verify email when it is typed into the system
     public boolean isEmailValid() {
         return email.contains("@") && email.contains(".");
     }

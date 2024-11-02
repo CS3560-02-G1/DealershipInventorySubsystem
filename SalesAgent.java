@@ -13,9 +13,13 @@ public class SalesAgent {
         this.phoneNumber = phoneNumber;
     }
 
-    // updates contact information for sales agent
-    public void updateContactInfo(String newEmail, String newPhone) {
+    // update the email of a sales agent
+    public void setEmail(String newEmail) {
         this.email = newEmail;
+    }
+
+    // update the phone number of a sales agent
+    public void setPhoneNumber(String newPhone) {
         this.phoneNumber = newPhone;
     }
 

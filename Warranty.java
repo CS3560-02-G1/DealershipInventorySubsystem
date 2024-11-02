@@ -48,12 +48,24 @@ public class Warranty {
         return coverageLimit;
     }
 
-    // updates warranty details with new values
-    public void updateWarrantyDetails(String newType, int newDuration, String newPolicy, double newPrice, double newCoverageLimit) {
+    // setters for warranty attributes
+    public void setType(String newType) {
         this.type = newType;
+    }
+
+    public void setDuration(int newDuration) {
         this.duration = newDuration;
+    }
+
+    public void setPolicy(String newPolicy) {
         this.policy = newPolicy;
+    }
+
+    public void setPrice(double newPrice) {
         this.price = newPrice;
-        this.coverageLimit = newCoverageLimit;
+    }
+
+    public void setCoverageLimit(double newLimit) {
+        this.coverageLimit = newLimit;
     }
 }

@@ -17,6 +17,8 @@ public abstract class Transaction {
 
     // calculates total cost after tax
     public double calculateTotal() {
+        //Might need to change name of totalAmount, since it sounds like it includes tax
+        //Assumes tax is in dollar amount, needs to be changed if tax is in percentage
         return totalAmount + tax;
     }
 

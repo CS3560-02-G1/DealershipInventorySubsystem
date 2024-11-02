@@ -21,6 +21,11 @@ public class Commission {
         this.commissionRate = newRate;
     }
 
+    // updates the day that the sales agent gets paid / was paid
+    public void updatePaymentDate(String newDate) {
+        this.paymentDate = newDate;
+    }
+
     // returns payment date
     public String getPaymentDate() {
         return paymentDate;

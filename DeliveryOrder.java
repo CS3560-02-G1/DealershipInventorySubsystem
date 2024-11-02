@@ -18,9 +18,19 @@ public class DeliveryOrder {
         this.status = newStatus;
     }
 
+    //Track the delivery
+    public String getStatus() {
+        return this.status;
+    }
+
     // estimates delivery time based on source location
     public int estimateDeliveryTime() {
         return sourceLocation.equalsIgnoreCase("local") ? 1 : 5;
+    }
+
+    // updates the arrival date to the new expected, or the actual date it arrived
+    public void setArrivalDate(String newArrivalDate) {
+        this.arrivalDate = newArrivalDate;
     }
 
     // returns arrival details

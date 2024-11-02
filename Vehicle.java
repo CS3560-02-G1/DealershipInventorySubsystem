@@ -28,6 +28,11 @@ public class Vehicle {
         this.status = newStatus;
     }
 
+    // update listed price of vehicle
+    public void updatePrice(double newPrice) {
+        this.price = newPrice;
+    }
+
     // calculates depreciation 
     public double calculateDepreciation() {
         return 0.0; // placeholder

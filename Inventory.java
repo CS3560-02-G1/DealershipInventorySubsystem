@@ -16,6 +16,21 @@ public class Inventory {
         this.vehicleCount = newCount;
     }
 
+    // incrementally updates the vehicle count
+    public void addVehicle() {
+        this.vehicleCount++;
+    }
+
+    // decrements the vehicle count for whenever a vehicle is removed from the inventory
+    public void removeVehicle() {
+        this.vehicleCount--;
+    }
+
+    // getter method for vehicle count
+    public int getVehicleCount() {
+        return this.vehicleCount;
+    }
+
     // checks if inventory is low
     public boolean isLowStock() {
         return vehicleCount < 5;
