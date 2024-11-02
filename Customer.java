@@ -1,22 +1,33 @@
 package DealershipInventorySubsystem;
-public class Customer {
-    private String name;
-    private String phoneNumber;
-    private String emailAddress;
-    private String purchaseHistory;
 
-    // constructor for customer with contact info and purchase history
-    public Customer(String name, String phoneNumber, String emailAddress, String purchaseHistory) {
+// represents a customer in the dealership system
+public class Customer {
+    private String name; // name of customer
+    private String phoneNumber; // customer's contact phone number
+    private String address; // customer's home address
+    private String email; // customer's email address
+
+    // initializes a customer with name, phone, address, and email
+    public Customer(String name, String phoneNumber, String address, String email) {
         this.name = name;
         this.phoneNumber = phoneNumber;
-        this.emailAddress = emailAddress;
-        this.purchaseHistory = purchaseHistory;
+        this.address = address;
+        this.email = email;
     }
 
-    // add a purchase to history
-    public void addPurchase(String purchase) {
-        this.purchaseHistory += ", " + purchase;
+    // updates customer's contact information
+    public void updateContactInfo(String newPhone, String newEmail) {
+        this.phoneNumber = newPhone;
+        this.email = newEmail;
     }
 
-    // getters and setters can be added
+    // returns customer's contact information 
+    public String getContactInfo() {
+        return name + " | " + phoneNumber + " | " + email;
+    }
+
+    // checks if email is valid
+    public boolean isEmailValid() {
+        return email.contains("@") && email.contains(".");
+    }
 }

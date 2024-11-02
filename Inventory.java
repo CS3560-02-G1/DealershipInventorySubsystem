@@ -1,20 +1,28 @@
 package DealershipInventorySubsystem;
+
+// represents vehicle inventory for dealership
 public class Inventory {
-    private int totalVehicles;
-    private int availableVehicles;
-    private boolean lowStockAlert;
+    private String type; // type of inventory 
+    private int vehicleCount; // number of vehicles in inventory
 
-    // constructor for inventory with vehicle counts
-    public Inventory(int totalVehicles, int availableVehicles, boolean lowStockAlert) {
-        this.totalVehicles = totalVehicles;
-        this.availableVehicles = availableVehicles;
-        this.lowStockAlert = lowStockAlert;
+    // initializes inventory with type and vehicle count
+    public Inventory(String type, int vehicleCount) {
+        this.type = type;
+        this.vehicleCount = vehicleCount;
     }
 
-    // check if inventory is low
-    public boolean checkLowStock() {
-        return availableVehicles < 5;
+    // updates count of vehicles in inventory
+    public void updateVehicleCount(int newCount) {
+        this.vehicleCount = newCount;
     }
 
-    // getters and setters can be added 
+    // checks if inventory is low
+    public boolean isLowStock() {
+        return vehicleCount < 5;
+    }
+
+    // checks if inventory is empty
+    public boolean isEmpty() {
+        return vehicleCount == 0;
+    }
 }
