@@ -18,6 +18,7 @@ import java.awt.event.WindowEvent;
 import java.util.Arrays;
 
 import javax.swing.*;
+import java.awt.*;
 import javax.swing.border.EmptyBorder;
 
 
@@ -176,7 +177,14 @@ class InventoryView {
         return vehicleList;
     }
 
-    private void ShowInventoryMenu() {
+    public void addVehicle(Vehicle vehicle) {
+        System.out.print("adding vehicle object to list");
+        Vehicle[] newVehicles = Arrays.copyOf(vehicles, vehicles.length + 1);
+        newVehicles[vehicles.length] = vehicle;
+        vehicles = newVehicles;
+    }
+    
+    public void ShowInventoryMenu() {
         frame.getContentPane().removeAll();
 
         frame.setLayout(new GridBagLayout());
@@ -333,6 +341,13 @@ class InventoryView {
             }
         });
         
+        addVehicleButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                new AddVehiclePopup(InventoryView.this);
+            }
+        });
+        
         removeVehicleButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -384,6 +399,126 @@ class InventoryView {
 
     }
 }
+
+class AddVehiclePopup {
+    JFrame frame;
+    JTextField vinField, makeField, modelField, colorField, yearField, conditionField, priceField;
+    InventoryView inventoryView;
+
+    public AddVehiclePopup(InventoryView inventoryView) {
+        this.inventoryView = inventoryView;
+
+        frame = new JFrame("Add New Vehicle");
+        frame.setLayout(new GridBagLayout());
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JPanel panel = new JPanel(new GridLayout(0, 2)); 
+
+        JLabel vinLabel = new JLabel("VIN:");
+        vinField = new JTextField(10);  
+        panel.add(vinLabel);
+        panel.add(vinField);
+
+        JLabel makeLabel = new JLabel("Make:");
+        makeField = new JTextField(10);
+        panel.add(makeLabel);
+        panel.add(makeField);
+
+        JLabel modelLabel = new JLabel("Model:");
+        modelField = new JTextField(10);
+        panel.add(modelLabel);
+        panel.add(modelField);
+
+        JLabel yearLabel = new JLabel("Year:");
+        yearField = new JTextField(10);
+        panel.add(yearLabel);
+        panel.add(yearField);
+
+        JLabel colorLabel = new JLabel("Color:");
+        colorField = new JTextField(10);
+        panel.add(colorLabel);
+        panel.add(colorField);
+
+        JLabel priceLabel = new JLabel("Price:");
+        priceField = new JTextField(10);
+        panel.add(priceLabel);
+        panel.add(priceField);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        frame.add(panel, gbc);
+
+        //add Vehicle button in popup
+        JButton addButton = new JButton("Add Vehicle");
+        addButton.addActionListener(e -> addVehicle());
+        gbc.gridy = 1;  
+        gbc.gridwidth = 1;
+        frame.add(addButton, gbc);
+
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    private void addVehicle() {
+        try {
+            if (vinField.getText().isEmpty() || makeField.getText().isEmpty() || modelField.getText().isEmpty() ||
+                yearField.getText().isEmpty() || colorField.getText().isEmpty() || priceField.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;  //exit if any field is empty
+            }
+    
+            int year;
+            double price;
+            try {
+                year = Integer.parseInt(yearField.getText()); //parse the year
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame, "Please enter a valid year.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+    
+            try {
+                price = Double.parseDouble(priceField.getText()); //parse the price
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame, "Please enter a valid price.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+    
+            //"On Lot" and "Mint Condition" are placeholders for condition and vehicle status
+            String status = "On Lot"; //idk if we should be entering this or not
+            String condition = "Mint Condition"; //same with condition
+    
+            // create new vehicle object 
+            Vehicle newVehicle = new Vehicle(
+                vinField.getText(),  
+                modelField.getText(),  
+                year,
+                status,  
+                condition,
+                makeField.getText(),
+                colorField.getText(),
+                price
+            );
+    
+            inventoryView.addVehicle(newVehicle); //add to list of vehicles (probably not because why would it work)
+            inventoryView.ShowInventoryMenu();
+            // for(int i = 0; i>=0; i++){
+            //     System.out.print(vehicles[i]);
+            // }
+            
+            frame.dispose();  //close the add vehicle popup
+    
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(frame, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+        
+}
+
 
 class VehicleInfoView {
     JFrame frame;

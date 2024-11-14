@@ -21,6 +21,7 @@ public class Vehicle {
         this.make = make;
         this.color = color;
         this.price = price;
+        //System.out.print("creating vehicle object\n");
     }
 
     // updates status of vehicle
