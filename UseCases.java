@@ -125,17 +125,19 @@ public class UseCases {
 class InventoryView {
     private int padding;
     private Integer vehicleIndexMap[];
-    private Vehicle[] vehicles;
+    public Vehicle[] vehicles;
     private String[] vehicleStrings;
     private JFrame frame;
+    String currentSearch;
+    final String SEARCH_PROMPT = " Search...";
+    DefaultListModel<Object> vehicleListModel;
 
     public InventoryView(Vehicle vehicles[], JFrame frame) {
         this.frame = frame;
+        currentSearch = SEARCH_PROMPT;
 
         padding = 10;
         this.vehicles = vehicles;
-        vehicleIndexMap = new Integer[vehicles.length];
-        vehicleStrings = getVehicleStrings(vehicles);
 
         ShowInventoryMenu();
     }
@@ -170,7 +172,11 @@ class InventoryView {
         return vehicleStrings;
     }
 
-    public Object[] findVehicleList(String filterString) {
+    public Object[] getVehicleList() {
+        vehicleStrings = getVehicleStrings(vehicles);
+        String filterString = currentSearch.equals(SEARCH_PROMPT) ? null : currentSearch;
+        vehicleIndexMap = new Integer[vehicles.length];
+
         String stringsToInclude[];
         int numIncludedStrings;
 
@@ -224,11 +230,13 @@ class InventoryView {
         return vehicleList;
     }
 
-    public void addVehicle(Vehicle vehicle) {
-        System.out.print("adding vehicle object to list");
-        Vehicle[] newVehicles = Arrays.copyOf(vehicles, vehicles.length + 1);
-        newVehicles[vehicles.length] = vehicle;
-        vehicles = newVehicles;
+    public void updateVehicleList() {
+        Object data[] = getVehicleList();
+        
+        vehicleListModel.removeAllElements();
+        vehicleListModel.addAll(Arrays.asList(data));
+
+        frame.repaint();
     }
     
     public void ShowInventoryMenu() {
@@ -252,13 +260,14 @@ class InventoryView {
         // Add search box to list panel
         listPanel.add(searchBox);
 
-        
         // Create list of vehicles
-        Object[] data = findVehicleList(searchBox.getText().equals(" Search...") ? null : searchBox.getText());
-        DefaultListModel<Object> listModel = new DefaultListModel<>();
-        listModel.addAll(Arrays.asList(data));
 
-        JList<Object> list = new JList<>(listModel);
+        currentSearch = searchBox.getText();
+        Object[] data = getVehicleList();
+        vehicleListModel = new DefaultListModel<>();
+        vehicleListModel.addAll(Arrays.asList(data));
+
+        JList<Object> list = new JList<>(vehicleListModel);
         list.setCellRenderer(new ComboBoxRenderer());
 
         // Create a listScroller to contain list (allows for scrolling through list)
@@ -377,89 +386,42 @@ class InventoryView {
         searchBox.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                listModel.removeAllElements();
-                Object data[] = findVehicleList(searchBox.getText().equals(" Search...") ? null : searchBox.getText());
-
-                listModel.addAll(Arrays.asList(data));
-                frame.repaint();
+                currentSearch = searchBox.getText();
+                updateVehicleList();
             }
         });
         
-        viewDetailsButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (viewDetailsButton.isEnabled()) {
-                    new VehicleInfoView(vehicles[UseCases.selectedIndex]);
-                }
-            }
-        });
+        viewDetailsButton.addActionListener(e -> new VehicleInfoView(vehicles[UseCases.selectedIndex]));
 
-        addVehicleButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (addVehicleButton.isEnabled()) {
-                    new VehicleEditor(null, "New Vehicle", "Add Vehicle");
-                }
-            }
-        });
+        addVehicleButton.addActionListener(e -> new VehicleEditor(null, null, this));
         
-        manageVehicleButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (manageVehicleButton.isEnabled()) {
-                    new VehicleEditor(vehicles[UseCases.selectedIndex], "Edit Vehicle", "Save Vehicle");
-                }
-            }
-        });
+        manageVehicleButton.addActionListener(e -> new VehicleEditor(vehicles[UseCases.selectedIndex], UseCases.selectedIndex, this));
         
-        addVehicleButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                new AddVehiclePopup(InventoryView.this);
-            }
-        });
+        // addVehicleButton.addMouseListener(new MouseAdapter() {
+        //     @Override
+        //     public void mouseClicked(MouseEvent e) {
+        //         new AddVehiclePopup(InventoryView.this);
+        //     }
+        // });
         
-        removeVehicleButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (removeVehicleButton.isEnabled()) {
-                    new ConfirmationBox(new ConfirmationBox.OnResults() {
-                        @Override
-                        public void onConfirm() {
-                            System.out.println("Removed!");
-                        }
-                    });
-                }
+        removeVehicleButton.addActionListener(e -> new ConfirmationBox(new ConfirmationBox.OnResults() {
+            public void onConfirm() {
+                System.out.println("Removed!");
             }
-        });
+        }));
 
-        markAsSoldButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (markAsSoldButton.isEnabled()) {
-                    new ConfirmationBox(new ConfirmationBox.OnResults() {
-                        @Override
-                        public void onConfirm() {
-                            System.out.println("Marked as sold!");
-                        }
-                    });
-                }
+        markAsSoldButton.addActionListener(e -> new ConfirmationBox(new ConfirmationBox.OnResults() {
+            public void onConfirm() {
+                System.out.println("Marked as Sold!");
             }
-        });
+        }));
 
-        scheduleMaintenanceButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (scheduleMaintenanceButton.isEnabled()) {
-                    new ConfirmationBox(new ConfirmationBox.OnResults() {
-                        @Override
-                        public void onConfirm() {
-                            System.out.println("Scheduled for maintenance!");
-                        }
-                    });
-                }
+        scheduleMaintenanceButton.addActionListener(e -> new ConfirmationBox(new ConfirmationBox.OnResults() {
+            public void onConfirm() {
+                System.out.println("Scheduled for Maintenance!");
             }
-        });
+        }));
+
         //endregion
 
         // Shrink the frame to fit its contents
@@ -470,126 +432,6 @@ class InventoryView {
 
     }
 }
-
-class AddVehiclePopup {
-    JFrame frame;
-    JTextField vinField, makeField, modelField, colorField, yearField, conditionField, priceField;
-    InventoryView inventoryView;
-
-    public AddVehiclePopup(InventoryView inventoryView) {
-        this.inventoryView = inventoryView;
-
-        frame = new JFrame("Add New Vehicle");
-        frame.setLayout(new GridBagLayout());
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-        JPanel panel = new JPanel(new GridLayout(0, 2)); 
-
-        JLabel vinLabel = new JLabel("VIN:");
-        vinField = new JTextField(10);  
-        panel.add(vinLabel);
-        panel.add(vinField);
-
-        JLabel makeLabel = new JLabel("Make:");
-        makeField = new JTextField(10);
-        panel.add(makeLabel);
-        panel.add(makeField);
-
-        JLabel modelLabel = new JLabel("Model:");
-        modelField = new JTextField(10);
-        panel.add(modelLabel);
-        panel.add(modelField);
-
-        JLabel yearLabel = new JLabel("Year:");
-        yearField = new JTextField(10);
-        panel.add(yearLabel);
-        panel.add(yearField);
-
-        JLabel colorLabel = new JLabel("Color:");
-        colorField = new JTextField(10);
-        panel.add(colorLabel);
-        panel.add(colorField);
-
-        JLabel priceLabel = new JLabel("Price:");
-        priceField = new JTextField(10);
-        panel.add(priceLabel);
-        panel.add(priceField);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        frame.add(panel, gbc);
-
-        //add Vehicle button in popup
-        JButton addButton = new JButton("Add Vehicle");
-        addButton.addActionListener(e -> addVehicle());
-        gbc.gridy = 1;  
-        gbc.gridwidth = 1;
-        frame.add(addButton, gbc);
-
-        frame.pack();
-        frame.setVisible(true);
-    }
-
-    private void addVehicle() {
-        try {
-            if (vinField.getText().isEmpty() || makeField.getText().isEmpty() || modelField.getText().isEmpty() ||
-                yearField.getText().isEmpty() || colorField.getText().isEmpty() || priceField.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;  //exit if any field is empty
-            }
-    
-            int year;
-            double price;
-            try {
-                year = Integer.parseInt(yearField.getText()); //parse the year
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(frame, "Please enter a valid year.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-    
-            try {
-                price = Double.parseDouble(priceField.getText()); //parse the price
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(frame, "Please enter a valid price.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-    
-            //"On Lot" and "Mint Condition" are placeholders for condition and vehicle status
-            String status = "On Lot"; //idk if we should be entering this or not
-            String condition = "Mint Condition"; //same with condition
-    
-            // create new vehicle object 
-            Vehicle newVehicle = new Vehicle(
-                vinField.getText(),  
-                modelField.getText(),  
-                year,
-                status,  
-                condition,
-                makeField.getText(),
-                colorField.getText(),
-                price
-            );
-    
-            inventoryView.addVehicle(newVehicle); //add to list of vehicles (probably not because why would it work)
-            inventoryView.ShowInventoryMenu();
-            // for(int i = 0; i>=0; i++){
-            //     System.out.print(vehicles[i]);
-            // }
-            
-            frame.dispose();  //close the add vehicle popup
-    
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(frame, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    
-        
-}
-
 
 class VehicleInfoView {
     JFrame frame;
@@ -659,7 +501,7 @@ class VehicleInfoView {
 
         exitButton.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                frame.dispose();
             }
         });
 
@@ -707,7 +549,7 @@ class ConfirmationBox {
         frame.add(denyButton, UseCases.getGridBagConst(0, 1, 1, 1, false, true, padding));
         denyButton.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                frame.dispose();
                 onResultsFunctions.onDeny();
             }
         });
@@ -718,7 +560,7 @@ class ConfirmationBox {
         frame.add(confirmButton, UseCases.getGridBagConst(1, 1, 1, 1, true, true, padding));
         confirmButton.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                frame.dispose();
                 onResultsFunctions.onConfirm();
             }
         });
@@ -733,11 +575,21 @@ class VehicleEditor {
     private int padding;
     private String saveText;
     private String titleText;
+    private Integer vehicleIndex;
+    private InventoryView parentInventoryView;
 
-    public VehicleEditor(Vehicle vehicle, String saveText, String titleText, JFrame frame) {
+    public VehicleEditor(Vehicle vehicle, Integer vehicleIndex, InventoryView parentInventoryView, JFrame frame) {
         this.frame = frame;
-        this.saveText = saveText;
-        this.titleText = titleText;
+        this.vehicleIndex = vehicleIndex;
+        if (vehicleIndex == null) {
+            titleText = "New Vehicle";
+            saveText = "Add Vehicle";
+        } else {
+            titleText = "Edit Vehicle";
+            saveText = "Save Vehicle";
+        }
+
+        this.parentInventoryView = parentInventoryView;
 
         padding = 10;
         if (vehicle == null) {
@@ -749,8 +601,8 @@ class VehicleEditor {
         ShowVehicleEditor();
     }
     
-    public VehicleEditor(Vehicle vehicle, String titleText, String saveText) {
-        this(vehicle, saveText, titleText, new JFrame("Vehicle Editor"));
+    public VehicleEditor(Vehicle vehicle, Integer vehicleIndex, InventoryView parentInventoryView) {
+        this(vehicle, vehicleIndex, parentInventoryView, new JFrame("Vehicle Editor"));
         
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -815,7 +667,7 @@ class VehicleEditor {
         frame.add(denyButton, UseCases.getGridBagConst(0, 10, 2, 1, false, true, padding));
         denyButton.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                frame.dispose();
             }
         });
 
@@ -826,8 +678,12 @@ class VehicleEditor {
         confirmButton.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (confirmButton.isEnabled()) {
-                    frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-                    System.out.println("Saved!");
+                    if (vehicleIndex == null) {
+                        addVehicle(vehicle);
+                    } else {
+                        changeVehicle(vehicle, vehicleIndex);
+                    }
+                    frame.dispose();
                 }
             }
         });
@@ -875,8 +731,21 @@ class VehicleEditor {
         frame.pack();
     }
 
+    public void addVehicle(Vehicle vehicle) {
+        Vehicle[] newVehicles = Arrays.copyOf(parentInventoryView.vehicles, parentInventoryView.vehicles.length + 1);
+        newVehicles[parentInventoryView.vehicles.length] = vehicle;
+        parentInventoryView.vehicles = newVehicles;
+
+        parentInventoryView.updateVehicleList();
+
+    }
+
+    public void changeVehicle(Vehicle newVehicle, int vehicleIndex) {
+        parentInventoryView.vehicles[vehicleIndex] = newVehicle;
+        parentInventoryView.updateVehicleList();
+    }
+
     private void setButtonEnabled(JTextField textFields[], JSpinner spinners[], JButton button) {
-        System.out.println("saveText");
         for (int i = 0; i < textFields.length; i++) {
             if (textFields[i].getText().equals("")) {
                 button.setEnabled(false);
