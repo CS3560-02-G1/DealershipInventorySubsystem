@@ -1,7 +1,14 @@
 package DealershipInventorySubsystem;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 // represents a warranty for a vehicle
 public class Warranty {
+	private int warrantyId;
+	private String vin;
     private String type; // type of warranty 
     private int duration; // duration of warranty in months
     private String policy; // policy details
@@ -15,6 +22,50 @@ public class Warranty {
         this.policy = policy;
         this.price = price;
         this.coverageLimit = coverageLimit;
+    }
+    
+    public Warranty(int id) {
+    	String query = "SELECT * FROM Warranty WHERE WarrantyID=" + id;   	
+		ResultSet rs = null;
+		Connection connection = null;
+		Statement statement = null;
+		
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			statement = connection.createStatement();
+			rs = statement.executeQuery(query);
+			
+			if (!rs.next()) {
+				throw new SQLException("No One Found With Query: " + query);
+			}
+			
+			this.warrantyId = rs.getInt("WarrantyID");
+			this.vin = rs.getString("VIN");
+			this.type = rs.getString("type");
+			this.duration = rs.getInt("duration");
+			this.policy = rs.getString("policy");
+			this.price = rs.getDouble("price");
+			this.coverageLimit = rs.getDouble("coverageLimit");
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+    }
+    
+    public int getId() {
+    	return this.warrantyId;
+    }
+    
+    public String getVIN() {
+    	return this.vin;
     }
 
     // checks if warranty is active 

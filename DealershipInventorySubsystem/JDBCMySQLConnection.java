@@ -36,4 +36,32 @@ public class JDBCMySQLConnection {
 	public static Connection getConnection() {
 		return instance.createConnection();
 	}
+	
+	public static ResultSet getResultSet(String query) {
+		ResultSet rs = null;
+		Connection connection = null;
+		Statement statement = null;
+
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			statement = connection.createStatement();
+			rs = statement.executeQuery(query);
+			
+			if (!rs.next()) {
+				throw new SQLException("No One Found With Query: " + query);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return rs;
+	}
 }
