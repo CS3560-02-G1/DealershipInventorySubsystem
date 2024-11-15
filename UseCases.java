@@ -397,13 +397,6 @@ class InventoryView {
         
         manageVehicleButton.addActionListener(e -> new VehicleEditor(vehicles[UseCases.selectedIndex], UseCases.selectedIndex, this));
         
-        // addVehicleButton.addMouseListener(new MouseAdapter() {
-        //     @Override
-        //     public void mouseClicked(MouseEvent e) {
-        //         new AddVehiclePopup(InventoryView.this);
-        //     }
-        // });
-        
         removeVehicleButton.addActionListener(e -> new ConfirmationBox(new ConfirmationBox.OnResults() {
             public void onConfirm() {
                 System.out.println("Removed!");
@@ -420,7 +413,14 @@ class InventoryView {
             public void onConfirm() {
                 System.out.println("Scheduled for Maintenance!");
             }
-        }));
+        }, String.format(
+            "<html><b>Schedule Maintenance For:</b><br/><span style='font-size:75%%'>%s %d %s %s<br/>VIN: %s</span>",
+            vehicles[UseCases.selectedIndex].getColor(),
+            vehicles[UseCases.selectedIndex].getYear(),
+            vehicles[UseCases.selectedIndex].getMake(),
+            vehicles[UseCases.selectedIndex].getModel(),
+            vehicles[UseCases.selectedIndex].getVin()
+        )));
 
         //endregion
 
@@ -519,10 +519,12 @@ class ConfirmationBox {
     JFrame frame;
     int padding;
     OnResults onResultsFunctions;
+    String prompt;
 
-    ConfirmationBox(OnResults onResultsFunctions) {
+    ConfirmationBox(OnResults onResultsFunctions, String prompt) {
         this.onResultsFunctions = onResultsFunctions;
         frame = new JFrame("Confirm Selection");
+        this.prompt = prompt;
 
         padding = 10;
 
@@ -533,18 +535,28 @@ class ConfirmationBox {
         frame.setVisible(true);
     }
 
+    ConfirmationBox(OnResults onResultsFunctions) {
+        this(onResultsFunctions, "<html><b>Are you sure?</b>");
+    }
+
     void ShowConfirmationBox() {
         frame.setLayout(new GridBagLayout());
 
-        JLabel question = new JLabel("Are you sure?", SwingConstants.CENTER);
-        question.setFont(new Font("Arial", Font.BOLD, 25));
+        JLabel question = new JLabel(prompt, SwingConstants.CENTER);
+        question.setHorizontalAlignment(SwingConstants.CENTER);
+        question.setFont(new Font("Arial", Font.PLAIN, 25));
         question.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
         frame.add(question, UseCases.getGridBagConst(0, 0, 2, 1, true, false, padding));
 
         Font buttonFont = new Font("Arial", Font.BOLD, 15);
 
         JButton denyButton = new JButton("Deny");
-        denyButton.setPreferredSize(new Dimension(150, 40));
+
+        frame.pack();
+
+        int buttonWidth = Math.max(150, (question.getWidth() - padding) / 2);
+
+        denyButton.setPreferredSize(new Dimension(buttonWidth, 40));
         denyButton.setFont(buttonFont);
         frame.add(denyButton, UseCases.getGridBagConst(0, 1, 1, 1, false, true, padding));
         denyButton.addMouseListener(new MouseAdapter() {
@@ -555,7 +567,7 @@ class ConfirmationBox {
         });
 
         JButton confirmButton = new JButton("Confirm");
-        confirmButton.setPreferredSize(new Dimension(150, 40));
+        confirmButton.setPreferredSize(new Dimension(buttonWidth, 40));
         confirmButton.setFont(buttonFont);
         frame.add(confirmButton, UseCases.getGridBagConst(1, 1, 1, 1, true, true, padding));
         confirmButton.addMouseListener(new MouseAdapter() {
