@@ -23,16 +23,6 @@ public class Vehicle {
         this.price = price;
     }
 
-    // updates status of vehicle
-    public void updateStatus(String newStatus) {
-        this.status = newStatus;
-    }
-
-    // update listed price of vehicle
-    public void updatePrice(double newPrice) {
-        this.price = newPrice;
-    }
-
     // calculates depreciation 
     public double calculateDepreciation() {
         return 0.0; // placeholder
@@ -51,6 +41,40 @@ public class Vehicle {
     // returns summary of vehicle details
     public String getVehicleSummary() {
         return year + " " + make + " " + model + " - " + color + ", $" + price;
+    }
+
+    // updates status of vehicle
+    public void updateStatus(String newStatus) {
+        this.status = newStatus;
+    }
+
+    // update listed price of vehicle
+    public void updatePrice(double newPrice) {
+        this.price = newPrice;
+    }
+
+    public void updateVin(String newVin) {
+        this.vin = newVin;
+    }
+
+    public void updateModel(String newModel) {
+        this.model = newModel;
+    }
+
+    public void updateYear(int newYear) {
+        this.year = newYear;
+    }
+
+    public void updateCondition(String newCondition) {
+        this.condition = newCondition;
+    }
+
+    public void updateMake(String newMake) {
+        this.make = newMake;
+    }
+
+    public void updateColor(String newColor) {
+        this.color = newColor;
     }
 
     // getters for vehicle attributes
