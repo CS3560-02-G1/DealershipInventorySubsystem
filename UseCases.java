@@ -2,6 +2,7 @@ package DealershipInventorySubsystem;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -20,6 +21,8 @@ import java.util.Arrays;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 
 /*
@@ -42,12 +45,39 @@ import javax.swing.border.EmptyBorder;
  */
 
 public class UseCases {
-    private static JFrame primaryFrame;
+    public enum Permissions {
+        VIEW_DETAILS,
+        ADD_VEHICLE,
+        MANAGE_VEHICLE,
+        REMOVE_VEHICLE,
+        MARK_AS_SOLD,
+        SCHEDULE_MAINTENANCE
+    }
+    
+    public enum Actors {
+        ALL,
+        CUSTOMER,
+        SALES,
+        MAINTENANCE
+    }
+    
+    public static JFrame primaryFrame;
 
     public static int hoveredIndex = -1;
     public static Integer selectedIndex = null;
+    public static Actors permissionLevel;
 
     public static void main(String[] args) {
+        if (args.length == 0 || args[0].equals("all") || args[0].equals("0")) {
+            permissionLevel = Actors.ALL;
+        } else if (args[0].equals("customer") || args[0].equals("1")) {
+            permissionLevel = Actors.CUSTOMER;
+        } else if (args[0].equals("sales") || args[0].equals("2")) {
+            permissionLevel = Actors.SALES;
+        } else if (args[0].equals("maintenance") || args[0].equals("3")) {
+            permissionLevel = Actors.MAINTENANCE;
+        }
+
         primaryFrame = new JFrame("Dealership Inventory View");
         primaryFrame.setResizable(false);
         primaryFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -71,6 +101,23 @@ public class UseCases {
         c.insets = new Insets(padding, padding, bottomPadding ? padding : 0, rightPadding ? padding : 0);
 
         return c;
+    }
+
+    public static boolean getPermissions(Permissions permission) {
+        /* Permission matrix structure:
+         * 
+         *               VIEW_DETAILS ADD_VEHICLE MANAGE_VEHICLE REMOVE_VEHICLE MARK_AS_SOLD SCHEDULE_MAINTENANCE
+         *  CUSTOMER          __          __            __             __            __              __
+         *  SALES             __          __            __             __            __              __
+         *  MAINTENANCE       __          __            __             __            __              __
+         */
+        int[][] PERMISSION_MATRIX = {
+            {1, 1, 1, 1, 1, 1},
+            {1, 0, 0, 0, 0, 0},
+            {1, 1, 1, 1, 1, 0},
+            {1, 0, 0, 0, 0, 1},
+        };
+        return PERMISSION_MATRIX[permissionLevel.ordinal()][permission.ordinal()] == 1;
     }
     
 }
@@ -249,11 +296,17 @@ class InventoryView {
         frame.add(buttonsPanel, UseCases.getGridBagConst(1, 1, 1, 1, true, true, padding));
 
         JButton viewDetailsButton = new JButton("View Vehicle Details");
+        viewDetailsButton.setVisible(UseCases.getPermissions(UseCases.Permissions.VIEW_DETAILS));
         JButton addVehicleButton = new JButton("Add Vehicle");
+        addVehicleButton.setVisible(UseCases.getPermissions(UseCases.Permissions.ADD_VEHICLE));
         JButton removeVehicleButton = new JButton("Remove Vehicle");
+        removeVehicleButton.setVisible(UseCases.getPermissions(UseCases.Permissions.REMOVE_VEHICLE));
         JButton markAsSoldButton = new JButton("Mark as Sold");
+        markAsSoldButton.setVisible(UseCases.getPermissions(UseCases.Permissions.MARK_AS_SOLD));
         JButton scheduleMaintenanceButton = new JButton("Schedule for Maintenance");
+        scheduleMaintenanceButton.setVisible(UseCases.getPermissions(UseCases.Permissions.SCHEDULE_MAINTENANCE));
         JButton manageVehicleButton = new JButton("Manage Vehicle");
+        manageVehicleButton.setVisible(UseCases.getPermissions(UseCases.Permissions.MANAGE_VEHICLE));
 
         JButton[] buttons = {viewDetailsButton, addVehicleButton, manageVehicleButton, removeVehicleButton, markAsSoldButton, scheduleMaintenanceButton};
         JButton[] requireVehicleSelected = {viewDetailsButton, manageVehicleButton, removeVehicleButton, markAsSoldButton, scheduleMaintenanceButton};
@@ -340,6 +393,24 @@ class InventoryView {
                 }
             }
         });
+
+        addVehicleButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (addVehicleButton.isEnabled()) {
+                    new VehicleEditor(null, "New Vehicle", "Add Vehicle");
+                }
+            }
+        });
+        
+        manageVehicleButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (manageVehicleButton.isEnabled()) {
+                    new VehicleEditor(vehicles[UseCases.selectedIndex], "Edit Vehicle", "Save Vehicle");
+                }
+            }
+        });
         
         addVehicleButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -352,7 +423,7 @@ class InventoryView {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (removeVehicleButton.isEnabled()) {
-                    new ConfirmationBox(new OnResults() {
+                    new ConfirmationBox(new ConfirmationBox.OnResults() {
                         @Override
                         public void onConfirm() {
                             System.out.println("Removed!");
@@ -366,7 +437,7 @@ class InventoryView {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (markAsSoldButton.isEnabled()) {
-                    new ConfirmationBox(new OnResults() {
+                    new ConfirmationBox(new ConfirmationBox.OnResults() {
                         @Override
                         public void onConfirm() {
                             System.out.println("Marked as sold!");
@@ -380,7 +451,7 @@ class InventoryView {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (scheduleMaintenanceButton.isEnabled()) {
-                    new ConfirmationBox(new OnResults() {
+                    new ConfirmationBox(new ConfirmationBox.OnResults() {
                         @Override
                         public void onConfirm() {
                             System.out.println("Scheduled for maintenance!");
@@ -545,7 +616,7 @@ class VehicleInfoView {
     private void ShowVehicleView() {
         frame.setLayout(new GridBagLayout());
         
-        JLabel title = new JLabel(String.format("%d %s %s", vehicle.getYear(), vehicle.getMake(), vehicle.getModel()));
+        JLabel title = new JLabel(String.format("%d %s %s", vehicle.getYear(), vehicle.getMake(), vehicle.getModel()), SwingConstants.CENTER);
         Font titleFont = new Font("Arial", Font.BOLD, 30);
         title.setFont(titleFont);
 
@@ -557,14 +628,14 @@ class VehicleInfoView {
 
         JLabel makeLabel = new JLabel("<html><b>Make:</b> " + vehicle.getMake());
         JLabel modelLabel = new JLabel("<html><b>Model:</b> " + vehicle.getModel());
-        JLabel year = new JLabel("<html><b>Year:</b> " + vehicle.getYear());
-        JLabel color = new JLabel("<html><b>Color:</b> " + vehicle.getColor());
-        JLabel price = new JLabel("<html><b>Price:</b> " + String.format("$%,.2f", vehicle.getPrice()));
-        JLabel condition = new JLabel("<html><b>Condition:</b> " + vehicle.getCondition());
-        JLabel vin = new JLabel("<html><b>Vin:</b> " + vehicle.getVin());
-        JLabel status = new JLabel("<html><b>Status:</b> " + vehicle.getStatus());
+        JLabel yearLabel = new JLabel("<html><b>Year:</b> " + vehicle.getYear());
+        JLabel colorLabel = new JLabel("<html><b>Color:</b> " + vehicle.getColor());
+        JLabel priceLabel = new JLabel("<html><b>Price:</b> " + String.format("$%,.2f", vehicle.getPrice()));
+        JLabel conditionLabel = new JLabel("<html><b>Condition:</b> " + vehicle.getCondition());
+        JLabel vinLabel = new JLabel("<html><b>Vin:</b> " + vehicle.getVin());
+        JLabel statusLabel = new JLabel("<html><b>Status:</b> " + vehicle.getStatus());
     
-        JLabel detailLabels[] = {makeLabel, modelLabel, year, color, price, condition, vin, status};
+        JLabel detailLabels[] = {makeLabel, modelLabel, yearLabel, colorLabel, priceLabel, conditionLabel, vinLabel, statusLabel};
 
         Font detailFont = new Font("Arial", Font.PLAIN, 20);
         for (int i = 0; i < detailLabels.length; i++) {
@@ -598,6 +669,11 @@ class VehicleInfoView {
 }
 
 class ConfirmationBox {
+    public interface OnResults {
+        default void onConfirm() {};
+        default void onDeny() {};
+    }
+
     JFrame frame;
     int padding;
     OnResults onResultsFunctions;
@@ -651,9 +727,171 @@ class ConfirmationBox {
     }
 }
 
-interface OnResults {
-    default void onConfirm() {};
-    default void onDeny() {};
+class VehicleEditor {
+    private Vehicle vehicle;
+    private JFrame frame;
+    private int padding;
+    private String saveText;
+    private String titleText;
+
+    public VehicleEditor(Vehicle vehicle, String saveText, String titleText, JFrame frame) {
+        this.frame = frame;
+        this.saveText = saveText;
+        this.titleText = titleText;
+
+        padding = 10;
+        if (vehicle == null) {
+            this.vehicle = new Vehicle(null, null, 0, null, null, null, null, 0.0);
+        } else {
+            this.vehicle = vehicle;
+        }
+
+        ShowVehicleEditor();
+    }
+    
+    public VehicleEditor(Vehicle vehicle, String titleText, String saveText) {
+        this(vehicle, saveText, titleText, new JFrame("Vehicle Editor"));
+        
+        frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setVisible(true);
+    }
+
+    private void ShowVehicleEditor() {
+        frame.setLayout(new GridBagLayout());
+
+        JLabel title = new JLabel(titleText, SwingConstants.CENTER);
+        Font titleFont = new Font("Arial", Font.BOLD, 30);
+        title.setFont(titleFont);
+
+        frame.add(title, UseCases.getGridBagConst(0, 0, 4, 1, true, false, padding));
+
+        JSeparator titleSeparator = new JSeparator(JSeparator.HORIZONTAL);
+        titleSeparator.setForeground(Color.BLACK);
+        frame.add(titleSeparator, UseCases.getGridBagConst(0, 1, 4, 1, true, false, padding));
+
+        JLabel makeLabel = new JLabel("<html><b>Make:</b> ");
+        JLabel modelLabel = new JLabel("<html><b>Model:</b> ");
+        JLabel yearLabel = new JLabel("<html><b>Year:</b> ");
+        JLabel colorLabel = new JLabel("<html><b>Color:</b> ");
+        JLabel priceLabel = new JLabel("<html><b>Price:</b> ");
+        JLabel conditionLabel = new JLabel("<html><b>Condition:</b> ");
+        JLabel vinLabel = new JLabel("<html><b>Vin:</b> ");
+
+        JTextField makeTextField = new JTextField(vehicle.getMake() == null ? "" : vehicle.getMake());
+        JTextField modelTextField = new JTextField(vehicle.getModel() == null ? "" : vehicle.getModel());
+        JSpinner yearSpinner = new JSpinner(new SpinnerNumberModel(vehicle.getYear(), 0, 9999, 1));
+        yearSpinner.setEditor(new JSpinner.NumberEditor(yearSpinner, "#"));
+        JTextField colorTextField = new JTextField(vehicle.getColor() == null ? "" : vehicle.getColor());
+        JSpinner priceSpinner = new JSpinner(new SpinnerNumberModel(vehicle.getPrice(), 0.00, 9999999.99, 500.00));
+        JTextField conditionTextField = new JTextField(vehicle.getCondition() == null ? "" : vehicle.getCondition());
+        JTextField vinTextField = new JTextField(vehicle.getVin() == null ? "" : vehicle.getVin());
+
+        JLabel dollarLabel = new JLabel("$");
+        frame.add(dollarLabel, UseCases.getGridBagConst(1, 6, 1, 1, true, false, padding));
+
+        JLabel labels[] = {makeLabel, modelLabel, yearLabel, colorLabel, priceLabel, conditionLabel, vinLabel};
+        Component fields[] = {makeTextField, modelTextField, yearSpinner, colorTextField, priceSpinner, conditionTextField, vinTextField};
+        Font labelFont = new Font("Arial", Font.PLAIN, 20);
+        Font fieldFont = new Font("Arial", Font.PLAIN, 18);
+        for (int i = 0; i < labels.length; i++) {
+            labels[i].setHorizontalAlignment(SwingConstants.RIGHT);
+            labels[i].setFont(labelFont);
+            frame.add(labels[i], UseCases.getGridBagConst(0, 2 + i, 1, 1, false, false, padding));
+
+            fields[i].setFont(fieldFont);
+            frame.add(fields[i], UseCases.getGridBagConst(1, 2 + i, 3, 1, true, false, padding));
+        }
+
+        JSeparator buttonSeparator = new JSeparator(JSeparator.HORIZONTAL);
+        buttonSeparator.setForeground(Color.BLACK);
+        frame.add(buttonSeparator, UseCases.getGridBagConst(0, 9, 4, 1, true, false, padding));
+
+        Font buttonFont = new Font("Arial", Font.BOLD, 15);
+
+        JButton denyButton = new JButton("Cancel");
+        denyButton.setPreferredSize(new Dimension(200, 40));
+        denyButton.setFont(buttonFont);
+        frame.add(denyButton, UseCases.getGridBagConst(0, 10, 2, 1, false, true, padding));
+        denyButton.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+            }
+        });
+
+        JButton confirmButton = new JButton(saveText);
+        confirmButton.setPreferredSize(new Dimension(200, 40));
+        confirmButton.setFont(buttonFont);
+        frame.add(confirmButton, UseCases.getGridBagConst(2, 10, 2, 1, true, true, padding));
+        confirmButton.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (confirmButton.isEnabled()) {
+                    frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                    System.out.println("Saved!");
+                }
+            }
+        });
+
+        JTextField fieldsToCheck[] = {makeTextField, modelTextField, colorTextField, conditionTextField, vinTextField};
+        JSpinner spinnersToCheck[] = {yearSpinner, priceSpinner};
+
+        setButtonEnabled(fieldsToCheck, spinnersToCheck, confirmButton);
+
+        makeTextField.addKeyListener(new KeyAdapter() { public void keyReleased(KeyEvent e) {
+                vehicle.updateMake(makeTextField.getText());
+                setButtonEnabled(fieldsToCheck, spinnersToCheck, confirmButton);
+        }});
+
+        modelTextField.addKeyListener(new KeyAdapter() { public void keyReleased(KeyEvent e) {
+                vehicle.updateModel(modelTextField.getText());
+                setButtonEnabled(fieldsToCheck, spinnersToCheck, confirmButton);
+        }});
+
+        yearSpinner.addChangeListener(new ChangeListener() { public void stateChanged(ChangeEvent e) {
+                vehicle.updateYear((int)yearSpinner.getValue());
+                setButtonEnabled(fieldsToCheck, spinnersToCheck, confirmButton);
+        }});
+
+        colorTextField.addKeyListener(new KeyAdapter() { public void keyReleased(KeyEvent e) {
+                vehicle.updateColor(colorTextField.getText());
+                setButtonEnabled(fieldsToCheck, spinnersToCheck, confirmButton);
+        }});
+
+        priceSpinner.addChangeListener(new ChangeListener() { public void stateChanged(ChangeEvent e) {
+                vehicle.updatePrice((double)priceSpinner.getValue());
+                setButtonEnabled(fieldsToCheck, spinnersToCheck, confirmButton);
+        }});
+
+        conditionTextField.addKeyListener(new KeyAdapter() { public void keyReleased(KeyEvent e) {
+                vehicle.updateCondition(conditionTextField.getText());
+                setButtonEnabled(fieldsToCheck, spinnersToCheck, confirmButton);
+        }});
+
+        vinTextField.addKeyListener(new KeyAdapter() { public void keyReleased(KeyEvent e) {
+                vehicle.updateVin(vinTextField.getText());
+                setButtonEnabled(fieldsToCheck, spinnersToCheck, confirmButton);
+        }});
+
+        frame.pack();
+    }
+
+    private void setButtonEnabled(JTextField textFields[], JSpinner spinners[], JButton button) {
+        System.out.println("saveText");
+        for (int i = 0; i < textFields.length; i++) {
+            if (textFields[i].getText().equals("")) {
+                button.setEnabled(false);
+                return;
+            }
+        }
+        for (int i = 0; i < spinners.length; i++) {
+            if (spinners[i].getValue() instanceof Integer && spinners[i].getValue().equals(0) ||
+                spinners[i].getValue() instanceof Double && spinners[i].getValue().equals(0.0)) {
+                button.setEnabled(false);
+                return;
+            }
+        }
+        button.setEnabled(true);
+    }
 }
 
 class ComboBoxRenderer extends JLabel implements ListCellRenderer<Object> {
