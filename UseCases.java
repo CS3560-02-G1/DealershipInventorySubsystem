@@ -83,8 +83,8 @@ public class UseCases {
         primaryFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         Vehicle vehicles[] = {
-            new Vehicle("4Y1SL65848Z411439", "Transit 150", 2021, "Status", "Mint Condition", "Ford", "White", 31000.0),       
-            new Vehicle("4Y1SL65848Z411439", "Transit 250", 2021, "Status", "Mint Condition", "Ford", "White", 31000.0)        
+            new Vehicle("4Y1SL65848Z411439", "Transit 150", 2021, "Placeholder Status", "Mint Condition", "Ford", "White", 31000.0),       
+            new Vehicle("4Y1SL65848Z411439", "Transit 250", 2021, "Placeholder Status", "Mint Condition", "Ford", "White", 31000.0)        
         };
         new InventoryView(vehicles, primaryFrame);
         
@@ -593,7 +593,7 @@ class VehicleEditor {
 
         padding = 10;
         if (vehicle == null) {
-            this.vehicle = new Vehicle(null, null, 0, null, null, null, null, 0.0);
+            this.vehicle = new Vehicle(null, null, 0, "Placeholder Status", null, null, null, 0.0);
         } else {
             this.vehicle = vehicle;
         }
@@ -616,11 +616,11 @@ class VehicleEditor {
         Font titleFont = new Font("Arial", Font.BOLD, 30);
         title.setFont(titleFont);
 
-        frame.add(title, UseCases.getGridBagConst(0, 0, 4, 1, true, false, padding));
+        frame.add(title, UseCases.getGridBagConst(0, 0, 6, 1, true, false, padding));
 
         JSeparator titleSeparator = new JSeparator(JSeparator.HORIZONTAL);
         titleSeparator.setForeground(Color.BLACK);
-        frame.add(titleSeparator, UseCases.getGridBagConst(0, 1, 4, 1, true, false, padding));
+        frame.add(titleSeparator, UseCases.getGridBagConst(0, 1, 6, 1, true, false, padding));
 
         JLabel makeLabel = new JLabel("<html><b>Make:</b> ");
         JLabel modelLabel = new JLabel("<html><b>Model:</b> ");
@@ -639,8 +639,6 @@ class VehicleEditor {
         JTextField conditionTextField = new JTextField(vehicle.getCondition() == null ? "" : vehicle.getCondition());
         JTextField vinTextField = new JTextField(vehicle.getVin() == null ? "" : vehicle.getVin());
 
-        JLabel dollarLabel = new JLabel("$");
-        frame.add(dollarLabel, UseCases.getGridBagConst(1, 6, 1, 1, true, false, padding));
 
         JLabel labels[] = {makeLabel, modelLabel, yearLabel, colorLabel, priceLabel, conditionLabel, vinLabel};
         Component fields[] = {makeTextField, modelTextField, yearSpinner, colorTextField, priceSpinner, conditionTextField, vinTextField};
@@ -652,19 +650,27 @@ class VehicleEditor {
             frame.add(labels[i], UseCases.getGridBagConst(0, 2 + i, 1, 1, false, false, padding));
 
             fields[i].setFont(fieldFont);
-            frame.add(fields[i], UseCases.getGridBagConst(1, 2 + i, 3, 1, true, false, padding));
+            if (i == 4) {
+                JLabel dollarLabel = new JLabel("$");
+                dollarLabel.setFont(fieldFont);
+                frame.add(dollarLabel, UseCases.getGridBagConst(1, 2 + i, 1, 1, false, false, padding));
+        
+                frame.add(fields[i], UseCases.getGridBagConst(2, 2 + i, 4, 1, true, false, padding));
+            } else {
+                frame.add(fields[i], UseCases.getGridBagConst(1, 2 + i, 5, 1, true, false, padding));
+            }
         }
 
         JSeparator buttonSeparator = new JSeparator(JSeparator.HORIZONTAL);
         buttonSeparator.setForeground(Color.BLACK);
-        frame.add(buttonSeparator, UseCases.getGridBagConst(0, 9, 4, 1, true, false, padding));
+        frame.add(buttonSeparator, UseCases.getGridBagConst(0, 9, 6, 1, true, false, padding));
 
         Font buttonFont = new Font("Arial", Font.BOLD, 15);
 
         JButton denyButton = new JButton("Cancel");
         denyButton.setPreferredSize(new Dimension(200, 40));
         denyButton.setFont(buttonFont);
-        frame.add(denyButton, UseCases.getGridBagConst(0, 10, 2, 1, false, true, padding));
+        frame.add(denyButton, UseCases.getGridBagConst(0, 10, 3, 1, false, true, padding));
         denyButton.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 frame.dispose();
@@ -674,7 +680,7 @@ class VehicleEditor {
         JButton confirmButton = new JButton(saveText);
         confirmButton.setPreferredSize(new Dimension(200, 40));
         confirmButton.setFont(buttonFont);
-        frame.add(confirmButton, UseCases.getGridBagConst(2, 10, 2, 1, true, true, padding));
+        frame.add(confirmButton, UseCases.getGridBagConst(3, 10, 3, 1, true, true, padding));
         confirmButton.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (confirmButton.isEnabled()) {
