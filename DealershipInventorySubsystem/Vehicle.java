@@ -8,8 +8,7 @@ import java.sql.Statement;
 // represents a vehicle in dealership inventory
 public class Vehicle {
     private String vin; // vehicle identification number
-    private int inventoryId;
-    private int deliveryId;
+    private DeliveryOrder order;
     private String model; // model of vehicle
     private int year; // manufacturing year
     private String status; // available or sold
@@ -47,8 +46,6 @@ public class Vehicle {
 			}
 			
 			this.vin = rs.getString("vin");
-			this.inventoryId = rs.getInt("inventoryId");
-			this.deliveryId = rs.getInt("deliveryId");
 			this.model = rs.getString("model");
 			this.year = rs.getInt("year");
 			this.status = rs.getString("status");
@@ -80,12 +77,12 @@ public class Vehicle {
         return condition.equalsIgnoreCase("new");
     }
     
-    public int getInventoryId() {
-    	return this.inventoryId;
+    public void setDeliveryOrder(DeliveryOrder order) {
+    	this.order = order;
     }
     
-    public int getDeliveryId() {
-    	return this.deliveryId;
+    public DeliveryOrder getDeliveryOrder() {
+    	return order;
     }
 
     // returns age of vehicle based on current year

@@ -8,20 +8,31 @@ import java.sql.Statement;
 // represents a warranty for a vehicle
 public class Warranty {
 	private int warrantyId;
-	private String vin;
     private String type; // type of warranty 
     private int duration; // duration of warranty in months
     private String policy; // policy details
     private double price; // cost of warranty
     private double coverageLimit; // coverage limit in dollars
+	private Vehicle vehicle;
 
     // initializes warranty with type, duration, policy, price, and coverage limit
-    public Warranty(String type, int duration, String policy, double price, double coverageLimit) {
+    public Warranty(String type, int duration, String policy, double price, double coverageLimit, Vehicle vehicle) {
         this.type = type;
         this.duration = duration;
         this.policy = policy;
         this.price = price;
         this.coverageLimit = coverageLimit;
+        this.vehicle = vehicle;
+    }
+    
+    public Warranty(int id, String type, int duration, String policy, double price, double coverageLimit, Vehicle vehicle) {
+    	this.warrantyId = id;
+        this.type = type;
+        this.duration = duration;
+        this.policy = policy;
+        this.price = price;
+        this.coverageLimit = coverageLimit;
+        this.vehicle = vehicle;
     }
     
     public Warranty(int id) {
@@ -40,7 +51,6 @@ public class Warranty {
 			}
 			
 			this.warrantyId = rs.getInt("WarrantyID");
-			this.vin = rs.getString("VIN");
 			this.type = rs.getString("type");
 			this.duration = rs.getInt("duration");
 			this.policy = rs.getString("policy");
@@ -64,8 +74,8 @@ public class Warranty {
     	return this.warrantyId;
     }
     
-    public String getVIN() {
-    	return this.vin;
+    public Vehicle getVehicle() {
+    	return this.vehicle;
     }
 
     // checks if warranty is active 

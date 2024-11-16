@@ -7,8 +7,7 @@ import java.sql.Statement;
 
 // represents a delivery order for vehicles
 public class DeliveryOrder {
-	private int deliveryOrderId;
-	private int inventoryId;
+	private int deliveryId;
     private String sourceLocation; // origin location of vehicle
     private String status; // current status of delivery
     private String arrivalDate; // expected date of arrival
@@ -35,8 +34,7 @@ public class DeliveryOrder {
 				throw new SQLException("No One Found With Query: " + query);
 			}
 			
-			this.deliveryOrderId = rs.getInt("DeliveryID");
-			this.inventoryId = rs.getInt("InventoryID");
+			this.deliveryId = rs.getInt("DeliveryID");
 			this.sourceLocation = rs.getString("sourceLocation");
 			this.status = rs.getString("status");
 			this.arrivalDate = rs.getString("arrivalDate");
@@ -53,37 +51,44 @@ public class DeliveryOrder {
 			}
 		}
     }
-    
-    public int getId() {
-    	return this.deliveryOrderId;
-    }
-    
-    public int getInvetoryId() {
-    	return this.inventoryId;
-    }
-
-    // updates status of delivery order
-    public void updateStatus(String newStatus) {
-        this.status = newStatus;
-    }
-
-    //Track the delivery
-    public String getStatus() {
-        return this.status;
-    }
 
     // estimates delivery time based on source location
     public int estimateDeliveryTime() {
         return sourceLocation.equalsIgnoreCase("local") ? 1 : 5;
     }
+    
+    //Getters / Setters
+	public int getDeliveryId() {
+		return deliveryId;
+	}
 
-    // updates the arrival date to the new expected, or the actual date it arrived
-    public void setArrivalDate(String newArrivalDate) {
-        this.arrivalDate = newArrivalDate;
-    }
+	public void setDeliveryId(int deliveryId) {
+		this.deliveryId = deliveryId;
+	}
 
-    // returns arrival details
-    public String getArrivalDetails() {
-        return "expected arrival on: " + arrivalDate;
-    }
+	public String getSourceLocation() {
+		return sourceLocation;
+	}
+
+	public void setSourceLocation(String sourceLocation) {
+		this.sourceLocation = sourceLocation;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getArrivalDate() {
+		return arrivalDate;
+	}
+
+	public void setArrivalDate(String arrivalDate) {
+		this.arrivalDate = arrivalDate;
+	}
+    
+    
 }
