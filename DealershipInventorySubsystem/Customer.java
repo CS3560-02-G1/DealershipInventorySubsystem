@@ -58,6 +58,10 @@ public class Customer {
 		}
     }
     
+    public void setId(int id) {
+    	this.customerId = id;
+    }
+    
     public int getId() {
     	return customerId;
     }
@@ -65,16 +69,23 @@ public class Customer {
     public String getFullName() {
     	return firstName + " " + lastName;
     }
+    
+    public String getFirstName() {
+    	return firstName;
+    }
 
     public void setFirstName(String newName) {
         this.firstName = newName;
+    }
+    
+    public String getLastName() {
+    	return lastName;
     }
     
     public void setLastName(String newName) {
         this.lastName = newName;
     }
 
-    // update customer's phone number
     public void setPhoneNumber(String newPhone) {
         this.phoneNumber = newPhone;
     }
@@ -83,7 +94,6 @@ public class Customer {
     	return phoneNumber;
     }
 
-    // update customer's address
     public void setAddress(String newAddress) {
         this.address = newAddress;
     }
@@ -92,7 +102,6 @@ public class Customer {
     	return address;
     }
 
-    // update customer's email
     public void setEmail(String newEmail) {
         this.email = newEmail;
     }

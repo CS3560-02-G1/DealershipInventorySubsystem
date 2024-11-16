@@ -17,6 +17,12 @@ public class Maintenance {
         this.details = details;
     }
     
+    public Maintenance(int id, String type, String details) {
+    	this.maintenanceId = id;
+        this.type = type;
+        this.details = details;
+    }
+    
     public Maintenance(int id) {
     	String query = "SELECT * FROM Inventory WHERE InventoryID=" + id;
 		ResultSet rs = null;
@@ -49,16 +55,32 @@ public class Maintenance {
 		}
     }
     
+    //Getters / Setters
+    public void setId(int id) {
+    	maintenanceId = id;
+    }
+    
     public int getId() {
     	return this.maintenanceId;
     }
 
-    // updates details of maintenance record
-    public void updateDetails(String newDetails) {
-        this.details = newDetails;
-    }
+    public String getType() {
+		return type;
+	}
 
-    // checks if maintenance is marked as urgent
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getDetails() {
+		return details;
+	}
+
+	public void setDetails(String details) {
+		this.details = details;
+	}
+
+	// checks if maintenance is marked as urgent
     public boolean isUrgent() {
         return type.equalsIgnoreCase("urgent");
     }

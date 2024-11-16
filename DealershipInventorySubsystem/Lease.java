@@ -11,8 +11,8 @@ public class Lease extends Transaction {
     private int monthlyFee; // monthly payment for lease
 
     // initializes lease 
-    public Lease(String date, double tax, String paymentMethod, int leasePeriod, int monthlyFee) {
-        super(date, tax, paymentMethod);
+    public Lease(String date, double tax, String paymentMethod, Vehicle vehicle, Customer customer, int leasePeriod, int monthlyFee) {
+        super(date, tax, paymentMethod, vehicle, customer);
         this.leasePeriod = leasePeriod;
         this.monthlyFee = monthlyFee;
     }

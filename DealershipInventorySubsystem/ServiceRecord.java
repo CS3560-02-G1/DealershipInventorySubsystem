@@ -8,17 +8,28 @@ import java.sql.Statement;
 // represents a service record for a vehicle
 public class ServiceRecord {
 	private int recordId;
-	private String vin;
-	private int maintenanceId;
     private String date; // date of service
     private double price; // cost of service
     private String status; // status of service 
+    private Vehicle vehicle;
+    private Maintenance maintenance;
 
     // initializes service record with date, price, and status
-    public ServiceRecord(String date, double price, String status) {
+    public ServiceRecord(String date, double price, String status, Vehicle vehicle, Maintenance maintenance) {
         this.date = date;
         this.price = price;
         this.status = status;
+        this.vehicle = vehicle;
+        this.maintenance = maintenance;
+    }
+    
+    public ServiceRecord(int id, String date, double price, String status, Vehicle vehicle, Maintenance maintenance) {
+    	this.recordId = id;
+        this.date = date;
+        this.price = price;
+        this.status = status;
+        this.vehicle = vehicle;
+        this.maintenance = maintenance;
     }
     
     public ServiceRecord(int id) {
@@ -37,8 +48,6 @@ public class ServiceRecord {
 			}
 			
 			this.recordId = rs.getInt("RecordID");
-			this.vin = rs.getString("VIN");
-			this.maintenanceId = rs.getInt("MaintenanceID");
 			this.date = rs.getString("date");
 			this.price = rs.getDouble("price");
 			this.status = rs.getString("status");
@@ -56,24 +65,7 @@ public class ServiceRecord {
 		}
     }
     
-    public int getId() {
-    	return this.recordId;
-    }
-    
-    public String getVIN() {
-    	return this.vin;
-    }
-    
-    public int getMaintenanceId() {
-    	return this.maintenanceId;
-    }
-
-    // updates status of service record
-    public void updateStatus(String newStatus) {
-        this.status = newStatus;
-    }
-
-    // checks if service is complete
+ // checks if service is complete
     public boolean isServiceComplete() {
         return status.equalsIgnoreCase("complete");
     }
@@ -82,4 +74,56 @@ public class ServiceRecord {
     public String getServiceDetails() {
         return "date: " + date + ", status: " + status + ", price: $" + price;
     }
+    
+    //Getters / Setters
+
+    public int getRecordId() {
+		return recordId;
+	}
+
+	public void setRecordId(int recordId) {
+		this.recordId = recordId;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public Vehicle getVehicle() {
+		return vehicle;
+	}
+
+	public void setVehicle(Vehicle vehicle) {
+		this.vehicle = vehicle;
+	}
+
+	public Maintenance getMaintenance() {
+		return maintenance;
+	}
+
+	public void setMaintenance(Maintenance maintenance) {
+		this.maintenance = maintenance;
+	}
+
+	
 }

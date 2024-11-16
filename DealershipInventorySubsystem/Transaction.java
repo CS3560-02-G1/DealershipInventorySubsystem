@@ -8,17 +8,19 @@ import java.sql.Statement;
 // represents a general transaction in the dealership
 public abstract class Transaction {
 	protected int transactionId;
-	protected String vin;
-	protected int customerId;
     protected String date; // date of transaction
     protected double tax; // tax applied to transaction
     protected String paymentMethod; // payment method used
+    protected Vehicle vehicle;
+    protected Customer customer;
 
     // initializes transaction with date, tax, total amount, and payment method
-    public Transaction(String date, double tax, String paymentMethod) {
+    public Transaction(String date, double tax, String paymentMethod, Vehicle vehicle, Customer customer) {
         this.date = date;
         this.tax = tax;
         this.paymentMethod = paymentMethod;
+        this.vehicle = vehicle;
+        this.customer = customer;
     }
     
 
@@ -38,8 +40,6 @@ public abstract class Transaction {
 			}
 			
 			this.transactionId = rs.getInt("TransactionID");
-			this.vin = rs.getString("VIN");
-			this.customerId = rs.getInt("CustomerID");
 			this.date = rs.getString("date");
 			this.tax = rs.getInt("tax");
 			this.paymentMethod = rs.getString("paymentMethod");
@@ -63,16 +63,28 @@ public abstract class Transaction {
     }
     
     //Getters / Setters
+    public void setId(int id) {
+    	transactionId = id;
+    }
+    
     public int getId() {
     	return transactionId;
     }
     
-    public String getVIN() {
-    	return vin;
+    public void setVehicle(Vehicle vehicle) {
+    	this.vehicle = vehicle;
     }
     
-    public int getCustomerId() {
-    	return customerId;
+    public Vehicle getVehicle() {
+    	return vehicle;
+    }
+    
+    public void setCustomer(Customer customer) {
+    	this.customer = customer;
+    }
+    
+    public Customer getCustomer() {
+    	return customer;
     }
     
     public String getDate() {
