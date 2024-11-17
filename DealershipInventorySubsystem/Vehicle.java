@@ -1,10 +1,5 @@
 package DealershipInventorySubsystem;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 // represents a vehicle in dealership inventory
 public class Vehicle {
     private String vin; // vehicle identification number
@@ -28,43 +23,6 @@ public class Vehicle {
         this.color = color;
         this.price = price;
         //System.out.print("creating vehicle object\n");
-    }
-    
-    public Vehicle(String vin) {
-    	String query = "SELECT * FROM Vehicle WHERE VIN=" + vin;
-		ResultSet rs = null;
-		Connection connection = null;
-		Statement statement = null;
-		
-		try {
-			connection = JDBCMySQLConnection.getConnection();
-			statement = connection.createStatement();
-			rs = statement.executeQuery(query);
-			
-			if (!rs.next()) {
-				throw new SQLException("No One Found With Query: " + query);
-			}
-			
-			this.vin = rs.getString("vin");
-			this.model = rs.getString("model");
-			this.year = rs.getInt("year");
-			this.status = rs.getString("status");
-			this.condition = rs.getString("condition");
-			this.make = rs.getString("make");
-			this.color = rs.getString("color");
-			this.price = rs.getDouble("price");
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
     }
 
     // calculates depreciation 

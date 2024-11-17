@@ -1,10 +1,5 @@
 package DealershipInventorySubsystem;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 // represents a customer in the dealership system
 public class Customer {
 	private int customerId;
@@ -23,39 +18,13 @@ public class Customer {
         this.email = email;
     }
     
-    public Customer(int id) {
-    	String query = "SELECT * FROM Customer WHERE CustomerID=" + id;
-		ResultSet rs = null;
-		Connection connection = null;
-		Statement statement = null;
-		
-		try {
-			connection = JDBCMySQLConnection.getConnection();
-			statement = connection.createStatement();
-			rs = statement.executeQuery(query);
-			
-			if (!rs.next()) {
-				throw new SQLException("No One Found With Query: " + query);
-			}
-			
-			this.customerId = rs.getInt("CustomerID");
-			this.firstName = rs.getString("firstName");
-			this.lastName = rs.getString("lastName");
-			this.phoneNumber = rs.getString("phoneNumber");
-			this.address = rs.getString("address");
-			this.email = rs.getString("email");
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+    public Customer(int id, String firstName, String lastName, String phoneNumber, String address, String email) {
+    	customerId = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.email = email;
     }
     
     public void setId(int id) {

@@ -9,9 +9,9 @@ import java.sql.Statement;
 public class MaintenanceDAO {
 	
 	//Insert maintenace object into database, returns the id created
-	public int insertMaintenance(Maintenance maintenance) {
+	public Maintenance insertMaintenance(Maintenance maintenance) {
 		Connection connection = null;
-		String query = "INSERT IGNORE INTO Maintenance(type, details) VALUES (?, ?)";
+		String query = "INSERT INTO Maintenance(type, details) VALUES (?, ?)";
 		try {
 			connection = JDBCMySQLConnection.getConnection();
 			PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -19,7 +19,21 @@ public class MaintenanceDAO {
 			statement.setString(1, maintenance.getType());
 			statement.setString(2, maintenance.getDetails());
 
-			return statement.executeUpdate();
+			int affectedRows = statement.executeUpdate();
+			
+			if (affectedRows == 0) {
+				throw new SQLException("Insert Failed, No Rows Affected");
+			}
+			
+			try (ResultSet rs = statement.getGeneratedKeys()) {
+				if (rs.next()) {
+					maintenance.setId(rs.getInt(1));
+					return maintenance;
+				} else {
+					throw new SQLException("Creation Failed, no ID obtained");
+				}
+			}
+			
 		} catch(SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -32,7 +46,7 @@ public class MaintenanceDAO {
 			}
 		}
 		
-		return -1; //Returns -1 upon failure
+		return null; //Returns null upon failure
 	}
 	
 	public Maintenance getMaintenanceById(int id) {
@@ -47,7 +61,7 @@ public class MaintenanceDAO {
 			ResultSet rs = statement.executeQuery();
 			
 			if (!rs.next()) {
-				throw new SQLException("No One Found With Query: " + query);
+				return null;
 			}
 			
 			String type = rs.getString("type");

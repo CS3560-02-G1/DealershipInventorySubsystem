@@ -6,10 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.w3c.dom.UserDataHandler;
+
 public class CustomerDAO {
-	public int insertCustomer(Customer customer) {
+	public Customer insertCustomer(Customer customer) {
 		Connection connection = null;
-		String query = "INSERT IGNORE INTO Customer(firstName, lastName, phoneNumber, address, email) VALUES (?, ?, ?, ?, ?)";
+		String query = "INSERT INTO Customer(firstName, lastName, phoneNumber, address, email) VALUES (?, ?, ?, ?, ?)";
 		try {
 			connection = JDBCMySQLConnection.getConnection();
 			PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -20,9 +22,20 @@ public class CustomerDAO {
 			statement.setString(4, customer.getAddress());
 			statement.setString(5, customer.getEmail());
 
-			int newId = statement.executeUpdate();
-			customer.setId(newId);
-			return newId;
+			int affectedRows = statement.executeUpdate();
+			
+			if (affectedRows == 0) {
+				throw new SQLException("Insert Failed, No Rows Affected");
+			}
+			
+			try (ResultSet rs = statement.getGeneratedKeys()) {
+				if (rs.next()) {
+					customer.setId(rs.getInt(1));
+					return customer;
+				} else {
+					throw new SQLException("Creation Failed, no ID obtained");
+				}
+			}
 			
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -36,7 +49,7 @@ public class CustomerDAO {
 			}
 		}
 		
-		return -1;
+		return null;
 	}
 	
 	public Customer getCustomerById(int id) {
@@ -51,7 +64,7 @@ public class CustomerDAO {
 			ResultSet rs = statement.executeQuery();
 			
 			if (!rs.next()) {
-				throw new SQLException("No One Found With Query: " + query);
+				return null;
 			}
 			
 			String firstName = rs.getString("firstName");
@@ -60,7 +73,7 @@ public class CustomerDAO {
 			String address = rs.getString("address");
 			String email = rs.getString("email");
 			
-			return new Customer(firstName, lastName, phoneNumber, address, email);
+			return new Customer(id, firstName, lastName, phoneNumber, address, email);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

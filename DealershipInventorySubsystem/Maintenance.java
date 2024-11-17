@@ -1,10 +1,5 @@
 package DealershipInventorySubsystem;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 // represents a maintenance record
 public class Maintenance {
 	private int maintenanceId;
@@ -21,38 +16,6 @@ public class Maintenance {
     	this.maintenanceId = id;
         this.type = type;
         this.details = details;
-    }
-    
-    public Maintenance(int id) {
-    	String query = "SELECT * FROM Inventory WHERE InventoryID=" + id;
-		ResultSet rs = null;
-		Connection connection = null;
-		Statement statement = null;
-		
-		try {
-			connection = JDBCMySQLConnection.getConnection();
-			statement = connection.createStatement();
-			rs = statement.executeQuery(query);
-			
-			if (!rs.next()) {
-				throw new SQLException("No One Found With Query: " + query);
-			}
-			
-			this.maintenanceId = rs.getInt("MaintenanceID");
-			this.type = rs.getString("type");
-			this.details = rs.getString("details");
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
     }
     
     //Getters / Setters

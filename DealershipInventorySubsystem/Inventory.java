@@ -1,10 +1,5 @@
 package DealershipInventorySubsystem;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 // represents vehicle inventory for dealership
 public class Inventory {
 	private int inventoryId;
@@ -17,38 +12,6 @@ public class Inventory {
         this.vehicleCount = vehicleCount;
     }
     
-    //Constructor that reads the database to get values
-    public Inventory(int id) {
-    	ResultSet rs = null;
-		Connection connection = null;
-		Statement statement = null;
-		String query = "SELECT * FROM Inventory WHERE InventoryID=" + id;
-		
-		try {
-			connection = JDBCMySQLConnection.getConnection();
-			statement = connection.createStatement();
-			rs = statement.executeQuery(query);
-			
-			if (!rs.next()) {
-				throw new SQLException("No One Found With Query: " + query);
-			}
-			
-			this.inventoryId = rs.getInt("InventoryID");
-			this.type = rs.getString("type");
-			this.vehicleCount = rs.getInt("vehicleCount");
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-    }
     
     public int getId() {
     	return this.inventoryId;

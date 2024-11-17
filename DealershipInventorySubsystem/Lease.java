@@ -1,10 +1,5 @@
 package DealershipInventorySubsystem;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 // represents a lease transaction
 public class Lease extends Transaction {
     private int leasePeriod; // length of lease period in months
@@ -17,36 +12,10 @@ public class Lease extends Transaction {
         this.monthlyFee = monthlyFee;
     }
     
-    public Lease(int id) {
-    	super(id);
-    	String query = "SELECT * FROM Lease WHERE TransactionID=" + id;
-		ResultSet rs = null;
-		Connection connection = null;
-		Statement statement = null;
-		
-		try {
-			connection = JDBCMySQLConnection.getConnection();
-			statement = connection.createStatement();
-			rs = statement.executeQuery(query);
-			
-			if (!rs.next()) {
-				throw new SQLException("No One Found With Query: " + query);
-			}
-			
-			this.leasePeriod = rs.getInt("leasePeriod");
-			this.monthlyFee = rs.getInt("monthlyFee");
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+    public Lease(int id, String date, double tax, String paymentMethod, Vehicle vehicle, Customer customer, int leasePeriod, int monthlyFee) {
+        super(id, date, tax, paymentMethod, vehicle, customer);
+        this.leasePeriod = leasePeriod;
+        this.monthlyFee = monthlyFee;
     }
 
     // calculates total cost of lease

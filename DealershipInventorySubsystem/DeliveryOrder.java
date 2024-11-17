@@ -1,10 +1,5 @@
 package DealershipInventorySubsystem;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 // represents a delivery order for vehicles
 public class DeliveryOrder {
 	private int deliveryId;
@@ -19,38 +14,14 @@ public class DeliveryOrder {
         this.arrivalDate = arrivalDate;
     }
     
-    public DeliveryOrder(int id) {
-    	String query = "SELECT * FROM DeliveryOrder WHERE DeliveryID=" + id;
-		ResultSet rs = null;
-		Connection connection = null;
-		Statement statement = null;
-		
-		try {
-			connection = JDBCMySQLConnection.getConnection();
-			statement = connection.createStatement();
-			rs = statement.executeQuery(query);
-			
-			if (!rs.next()) {
-				throw new SQLException("No One Found With Query: " + query);
-			}
-			
-			this.deliveryId = rs.getInt("DeliveryID");
-			this.sourceLocation = rs.getString("sourceLocation");
-			this.status = rs.getString("status");
-			this.arrivalDate = rs.getString("arrivalDate");
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+    public DeliveryOrder(int id, String sourceLocation, String status, String arrivalDate) {
+    	deliveryId = id;
+        this.sourceLocation = sourceLocation;
+        this.status = status;
+        this.arrivalDate = arrivalDate;
     }
+    
+    
 
     // estimates delivery time based on source location
     public int estimateDeliveryTime() {
@@ -58,11 +29,11 @@ public class DeliveryOrder {
     }
     
     //Getters / Setters
-	public int getDeliveryId() {
+	public int getId() {
 		return deliveryId;
 	}
 
-	public void setDeliveryId(int deliveryId) {
+	public void setId(int deliveryId) {
 		this.deliveryId = deliveryId;
 	}
 

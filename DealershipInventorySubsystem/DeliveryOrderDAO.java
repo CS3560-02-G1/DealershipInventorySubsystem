@@ -6,9 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DeliveryOrderDAO {
-	public void insertDeliveryOrder(DeliveryOrder order) {
+	public DeliveryOrder insertDeliveryOrder(DeliveryOrder order) {
 		Connection connection = null;
-		String query = "INSERT IGNORE INTO DeliveryOrder(sourceLocation, status, arrivalDate) VALUES (?, ?, ?)";
+		String query = "INSERT INTO DeliveryOrder(sourceLocation, status, arrivalDate) VALUES (?, ?, ?)";
 		try {
 			connection = JDBCMySQLConnection.getConnection();
 			PreparedStatement statement = connection.prepareStatement(query);
@@ -17,7 +17,20 @@ public class DeliveryOrderDAO {
 			statement.setString(2, order.getStatus());
 			statement.setString(3, order.getArrivalDate());
 
-			statement.executeUpdate();
+			int affectedRows = statement.executeUpdate();
+			
+			if (affectedRows == 0) {
+				throw new SQLException("Insert Failed, No Rows Affected");
+			}
+			
+			try (ResultSet rs = statement.getGeneratedKeys()) {
+				if (rs.next()) {
+					order.setId(rs.getInt(1));
+					return order;
+				} else {
+					throw new SQLException("Creation Failed, no ID obtained");
+				}
+			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -29,6 +42,8 @@ public class DeliveryOrderDAO {
 				}
 			}
 		}
+		
+		return null;
 	}
 	
 	public DeliveryOrder getOrderById(int id) {
@@ -43,14 +58,14 @@ public class DeliveryOrderDAO {
 			ResultSet rs = statement.executeQuery();
 			
 			if (!rs.next()) {
-				throw new SQLException("No One Found With Query: " + query);
+				return null;
 			}
 			
 			String sourceLocation = rs.getString("sourceLocation");
 			String status = rs.getString("status");
 			String arrivalDate = rs.getString("arrivalDate");
 			
-			return new DeliveryOrder(sourceLocation, status, arrivalDate);
+			return new DeliveryOrder(id, sourceLocation, status, arrivalDate);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

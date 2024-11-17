@@ -1,10 +1,5 @@
 package DealershipInventorySubsystem;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 // represents a sales agent in dealership
 public class SalesAgent {
 	private int agentId;
@@ -21,44 +16,22 @@ public class SalesAgent {
         this.phoneNumber = phoneNumber;
     }
     
-    public SalesAgent(int id) {
-    	String query = "SELECT * FROM SalesAgent WHERE AgentID=" + id;
-		ResultSet rs = null;
-		Connection connection = null;
-		Statement statement = null;
-		
-		try {
-			connection = JDBCMySQLConnection.getConnection();
-			statement = connection.createStatement();
-			rs = statement.executeQuery(query);
-			
-			if (!rs.next()) {
-				throw new SQLException("No One Found With Query: " + query);
-			}
-			
-			this.agentId = rs.getInt("AgentID");
-			this.firstName = rs.getString("firstName");
-			this.lastName = rs.getString("lastName");
-			this.email = rs.getString("email");
-			this.phoneNumber = rs.getString("phoneNumber");
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+    public SalesAgent(int id, String firstName, String lastName, String email, String phoneNumber) {
+    	this.agentId = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
     }
 
     
     //Getters / Setters
     public int getId() {
     	return agentId;
+    }
+    
+    public void setId(int id) {
+    	agentId = id;
     }
     
     public String getFirstName() {

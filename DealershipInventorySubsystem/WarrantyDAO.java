@@ -10,9 +10,9 @@ import java.util.List;
 
 public class WarrantyDAO {
 	//Inserts the warranty into the database and returns the id. Requires the warranty to have a vehicle linked.
-	public int insertWarranty(Warranty warranty) {
+	public Warranty insertWarranty(Warranty warranty) {
 		Connection connection = null;
-		String query = "INSERT IGNORE INTO Warranty(type, duration, policy, price, coverageLimit, VIN) VALUES (?, ?, ?, ?, ?, ?)";
+		String query = "INSERT INTO Warranty(type, duration, policy, price, coverageLimit, VIN) VALUES (?, ?, ?, ?, ?, ?)";
 		try {
 			connection = JDBCMySQLConnection.getConnection();
 			PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -24,8 +24,20 @@ public class WarrantyDAO {
 			statement.setDouble(5, warranty.getCoverageLimit());
 			statement.setString(6, warranty.getVehicle().getVin());
 
-			int newId = statement.executeUpdate();
-			return newId;
+			int affectedRows = statement.executeUpdate();
+			
+			if (affectedRows == 0) {
+				throw new SQLException("Insert Failed, No Rows Affected");
+			}
+			
+			try (ResultSet rs = statement.getGeneratedKeys()) {
+				if (rs.next()) {
+					warranty.setId(rs.getInt(1));
+					return warranty;
+				} else {
+					throw new SQLException("Creation Failed, no ID obtained");
+				}
+			}
 			
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -39,7 +51,7 @@ public class WarrantyDAO {
 			}
 		}
 		
-		return -1; //Returns -1 as id if it fails
+		return null; //Returns null if it fails
 	}
 	
 	public Warranty getWarrantyById(int id) {
@@ -54,7 +66,7 @@ public class WarrantyDAO {
 			ResultSet rs = statement.executeQuery();
 			
 			if (!rs.next()) {
-				throw new SQLException("No One Found With Query: " + query);
+				return null;
 			}
 			
 			String type = rs.getString("type");

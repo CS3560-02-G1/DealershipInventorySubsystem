@@ -7,9 +7,9 @@ import java.sql.SQLException;
 
 public class VehicleDAO {
 	
-	public void insertVehicle(Vehicle vehicle) {
+	public Vehicle insertVehicle(Vehicle vehicle) {
 		Connection connection = null;
-		String query = "INSERT IGNORE INTO Vehicle(vin, model, make, year, color, status, currentCondition, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		String query = "INSERT INTO Vehicle(vin, model, make, year, color, status, currentCondition, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 		try {
 			connection = JDBCMySQLConnection.getConnection();
 			PreparedStatement statement = connection.prepareStatement(query);
@@ -24,6 +24,7 @@ public class VehicleDAO {
 			statement.setDouble(8, vehicle.getPrice());
 			
 			statement.executeUpdate();
+			return vehicle;
 		} catch(SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -35,6 +36,8 @@ public class VehicleDAO {
 				}
 			}
 		}
+		
+		return null;
 	}
 	
 	public Vehicle getVehicleById(String vin) {
@@ -49,7 +52,7 @@ public class VehicleDAO {
 			ResultSet rs = statement.executeQuery();
 			
 			if (!rs.next()) {
-				throw new SQLException("No One Found With Query: " + query);
+				return null;
 			}
 			
 			String model = rs.getString("model");
@@ -76,7 +79,8 @@ public class VehicleDAO {
 		return null;
 	}
 	
-	public void removeVehicle(String vin) {
+	//Returns true on delete / and false on unsuccessful
+	public boolean removeVehicle(String vin) {
 		Connection connection = null;
 		String query = "DELETE FROM Vehicle WHERE VIN=?";
 		try {
@@ -88,8 +92,10 @@ public class VehicleDAO {
 			int rs = statement.executeUpdate();
 			
 			if (rs == 0) {
-				throw new SQLException("Delete Failed");
+				return false;
 			}
+			
+			return true;
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -102,6 +108,8 @@ public class VehicleDAO {
 				}
 			}
 		}
+		
+		return false;
 		
 	}
 }

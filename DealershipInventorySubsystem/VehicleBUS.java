@@ -20,24 +20,29 @@ public class VehicleBUS {
 		return vehicleDAO.getVehicleById(vin);
 	}
 	
-	public void addVehicle(String vin, String model, int year, String status, String condition, String make, String color, double price) {
+	public Vehicle addVehicle(String vin, String model, int year, String status, String condition, String make, String color, double price) {
 		Vehicle vehicle = new Vehicle(vin, model, year, status, condition, make, color, price);
-		vehicleDAO.insertVehicle(vehicle);
+		return vehicleDAO.insertVehicle(vehicle);
 	}
 	
-	public void addVehicle(Vehicle vehicle) {
-		vehicleDAO.insertVehicle(vehicle);
+	public Vehicle addVehicle(Vehicle vehicle) {
+		return vehicleDAO.insertVehicle(vehicle);
 	}
 	
 	//NEED TO ADD UPDATE
 	
-	public void removeVehicle(String vin) {
-		vehicleDAO.removeVehicle(vin);
+	//Returns true on success, false otherwise
+	public boolean removeVehicle(String vin) {
+		return vehicleDAO.removeVehicle(vin);
 	}
 	
 	
 	//CRUD Methods for Warranty
-	public int addWarranty(String vin, String type, int duration, String policy, double price, double coverageLimit) {
+	public Warranty addWarranty(Warranty warranty) {
+		return warrantyDAO.insertWarranty(warranty);
+	}
+	
+	public Warranty addWarranty(String vin, String type, int duration, String policy, double price, double coverageLimit) {
 		Vehicle vehicle = vehicleDAO.getVehicleById(vin);
 		Warranty warranty = new Warranty(type, duration, policy, price, coverageLimit, vehicle);
 		return warrantyDAO.insertWarranty(warranty); //Returns newly created id
@@ -54,7 +59,11 @@ public class VehicleBUS {
 	//NEED TO ADD UPDATE AND DELETE METHODS
 	
 	//CRUD Methods for Maintenance
-	public int addMaintenance(String type, String details) {
+	public Maintenance addMaintenance(Maintenance maintenance) {
+		return maintenanceDAO.insertMaintenance(maintenance);
+	}
+	
+	public Maintenance addMaintenance(String type, String details) {
 		return maintenanceDAO.insertMaintenance(new Maintenance(type, details));
 	}
 	
@@ -65,7 +74,11 @@ public class VehicleBUS {
 	//NEED TO ADD UPDATE AND DELETE METHODS
 	
 	//CRUD Methods for Service Records
-	public int addServiceRecord(String date, double price, String status, String vin, int maintenanceId) {
+	public ServiceRecord addServiceRecord(ServiceRecord serviceRecord) {
+		return serviceRecordDAO.insertServiceRecord(serviceRecord);
+	}
+	
+	public ServiceRecord addServiceRecord(String date, double price, String status, String vin, int maintenanceId) {
 		Vehicle vehicle = vehicleDAO.getVehicleById(vin);
 		Maintenance maintenance = maintenanceDAO.getMaintenanceById(maintenanceId);
 		ServiceRecord newRecord = new ServiceRecord(date, price, status, vehicle, maintenance);

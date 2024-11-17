@@ -6,19 +6,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class ServiceRecordDAO {
-	public ServiceRecord insertServiceRecord(ServiceRecord record) {
+public class SalesAgentDAO {
+	public SalesAgent insertSalesAgent(SalesAgent agent) {
 		Connection connection = null;
-		String query = "INSERT INTO ServiceRecord(date, price, status, VIN, MaintenanceID) VALUES (?, ?, ?, ?, ?)";
+		String query = "INSERT INTO SalesAgent(firstName, lastName, email, phoneNumber) VALUES (?, ?, ?, ?)";
 		try {
 			connection = JDBCMySQLConnection.getConnection();
 			PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 			
-			statement.setString(1, record.getDate());
-			statement.setDouble(2, record.getPrice());
-			statement.setString(3, record.getStatus());
-			statement.setString(4, record.getVehicle().getVin());
-			statement.setInt(5, record.getMaintenance().getId());
+			statement.setString(1, agent.getFirstName());
+			statement.setString(2, agent.getLastName());
+			statement.setString(3, agent.getEmail());
+			statement.setString(4, agent.getPhoneNumber());
 
 			int affectedRows = statement.executeUpdate();
 			
@@ -28,13 +27,13 @@ public class ServiceRecordDAO {
 			
 			try (ResultSet rs = statement.getGeneratedKeys()) {
 				if (rs.next()) {
-					record.setId(rs.getInt(1));
-					return record;
+					agent.setId(rs.getInt(1));
+					return agent;
 				} else {
 					throw new SQLException("Creation Failed, no ID obtained");
 				}
 			}
-
+			
 		} catch(SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -47,12 +46,12 @@ public class ServiceRecordDAO {
 			}
 		}
 		
-		return null;
+		return null; //Returns null if it fails
 	}
 	
-	public ServiceRecord getServiceRecordById(int id) {
+	public SalesAgent getSalesAgentById(int id) {
 		Connection connection = null;
-		String query = "SELECT * FROM ServiceRecord WHERE RecordID = ?";
+		String query = "SELECT * FROM SalesAgent WHERE AgentID = ?";
 		try {
 			connection = JDBCMySQLConnection.getConnection();
 			PreparedStatement statement = connection.prepareStatement(query);
@@ -65,18 +64,12 @@ public class ServiceRecordDAO {
 				return null;
 			}
 			
-			int recordId = rs.getInt("RecordID");
-			String date = rs.getString("date");
-			Double price = rs.getDouble("price");
-			String status = rs.getString("status");
+			String firstName = rs.getString("firstName");
+			String lastName = rs.getString("lastName");
+			String email = rs.getString("email");
+			String phoneNumber = rs.getString("phoneNumber");
 			
-			VehicleDAO vehicleDAO = new VehicleDAO();
-			Vehicle vehicle = vehicleDAO.getVehicleById(rs.getString("VIN"));
-			
-			MaintenanceDAO maintenanceDAO = new MaintenanceDAO();
-			Maintenance maintenance = maintenanceDAO.getMaintenanceById(rs.getInt("MaintenanceID"));
-			
-			return new ServiceRecord(recordId, date, price, status, vehicle, maintenance);
+			return new SalesAgent(id, firstName, lastName, email, phoneNumber);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
