@@ -82,4 +82,66 @@ public class MaintenanceDAO {
 		
 		return null;
 	}
+	
+	public Maintenance updateMaintenance(Maintenance newMaintenance) {
+		Connection connection = null;
+		String query = "UPDATE Maintenance SET type = ?, details = ? WHERE MaintenanceID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setString(1, newMaintenance.getType());
+			statement.setString(2, newMaintenance.getDetails());
+			statement.setInt(3, newMaintenance.getId());
+			
+			statement.executeUpdate();
+			return newMaintenance;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	//Returns true on delete / and false on unsuccessful
+	public boolean removeMaintenance(Maintenance maintenance) {
+		Connection connection = null;
+		String query = "DELETE FROM Maintenance WHERE MaintenanceID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setInt(1, maintenance.getId());
+			
+			int rs = statement.executeUpdate();
+			
+			if (rs == 0) {
+				return false;
+			}
+			
+			return true;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return false;
+		
+	}
 }

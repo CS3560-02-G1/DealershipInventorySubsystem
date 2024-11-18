@@ -84,4 +84,68 @@ public class SalesAgentDAO {
 		
 		return null;
 	}
+	
+	public SalesAgent updaSalesAgent(SalesAgent newAgent) {
+		Connection connection = null;
+		String query = "UPDATE SalesAgent SET firstName = ?, lastName = ?, email = ?, phoneNumber = ? WHERE AgentID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setString(1, newAgent.getFirstName());
+			statement.setString(2, newAgent.getLastName());
+			statement.setString(3, newAgent.getEmail());
+			statement.setString(4, newAgent.getPhoneNumber());
+			statement.setInt(5, newAgent.getId());
+			
+			statement.executeUpdate();
+			return newAgent;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	//Returns true on delete / and false on unsuccessful
+	public boolean removeSalesAgent(SalesAgent agent) {
+		Connection connection = null;
+		String query = "DELETE FROM SalesAgent WHERE AgentID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setInt(1, agent.getId());
+			
+			int rs = statement.executeUpdate();
+			
+			if (rs == 0) {
+				return false;
+			}
+			
+			return true;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return false;
+		
+	}
 }

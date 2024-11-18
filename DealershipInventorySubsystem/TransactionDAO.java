@@ -164,6 +164,63 @@ public class TransactionDAO {
 		return null;
 	}
 	
+	public Sale updateSale(Sale sale) {
+		Connection connection = null;
+		String query = "UPDATE Sale SET downPayment = ? WHERE TransactionID = ?";
+		try {
+			updateTransaction(sale);
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setInt(1, sale.getDownPayment());
+			statement.setInt(2, sale.getId());
+			
+			statement.executeUpdate();
+			return sale;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public Lease updateLease(Lease lease) {
+		Connection connection = null;
+		String query = "UPDATE Lease SET leasePeriod = ?, monthlyFee = ? WHERE TransactionID = ?";
+		try {
+			updateTransaction(lease);
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setInt(1, lease.getLeasePeriod());
+			statement.setInt(2, lease.getMonthlyFee());
+			statement.setInt(3, lease.getId());
+			
+			statement.executeUpdate();
+			return lease;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	public Transaction getTransactionById(int id) {
 		Sale sale = getSaleById(id);
 		if (sale != null) {
@@ -218,5 +275,70 @@ public class TransactionDAO {
 		}
 		
 		return -1;
+	}
+	
+	private Transaction updateTransaction(Transaction newTransaction) {
+		Connection connection = null;
+		String query = "UPDATE Transaction SET VIN = ?, CustomerID = ?, date = ?, tax = ?, paymentMethod = ? WHERE TransactionID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setString(1, newTransaction.getVehicle().getVin());
+			statement.setInt(2, newTransaction.getCustomer().getId());
+			statement.setString(3, newTransaction.getDate());
+			statement.setDouble(4, newTransaction.getTax());
+			statement.setString(5, newTransaction.getPaymentMethod());
+			statement.setInt(6, newTransaction.getId());
+			
+			statement.executeUpdate();
+			return newTransaction;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	//Should delete the sale/lease as well, since it is on delete cascade
+	public boolean removeTransaction(Transaction transaction) {
+		Connection connection = null;
+		String query = "DELETE FROM Transaction WHERE TransactionID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setInt(1, transaction.getId());
+			
+			int rs = statement.executeUpdate();
+			
+			if (rs == 0) {
+				return false;
+			}
+			
+			return true;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return false;
+		
 	}
 }

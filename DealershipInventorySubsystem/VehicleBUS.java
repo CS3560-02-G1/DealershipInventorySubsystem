@@ -29,7 +29,9 @@ public class VehicleBUS {
 		return vehicleDAO.insertVehicle(vehicle);
 	}
 	
-	//NEED TO ADD UPDATE
+	public Vehicle updateVehicle(Vehicle newVehicle) {
+		return vehicleDAO.updateVehicle(newVehicle);
+	}
 	
 	//Returns true on success, false otherwise
 	public boolean removeVehicle(String vin) {
@@ -56,7 +58,13 @@ public class VehicleBUS {
 		return warrantyDAO.getAllWarranties(vin);
 	}
 	
-	//NEED TO ADD UPDATE AND DELETE METHODS
+	public Warranty updateWarranty(Warranty newWarranty) {
+		return warrantyDAO.updateWarranty(newWarranty);
+	}
+	
+	public boolean removeWarranty(Warranty warranty) {
+		return warrantyDAO.removeWarranty(warranty);
+	}
 	
 	//CRUD Methods for Maintenance
 	public Maintenance addMaintenance(Maintenance maintenance) {
@@ -71,7 +79,13 @@ public class VehicleBUS {
 		return maintenanceDAO.getMaintenanceById(id);
 	}
 	
-	//NEED TO ADD UPDATE AND DELETE METHODS
+	public Maintenance updateMaintenance(Maintenance newMaintenance) {
+		return maintenanceDAO.updateMaintenance(newMaintenance);
+	}
+	
+	public boolean removeMaintenance(Maintenance maintenance) {
+		return maintenanceDAO.removeMaintenance(maintenance);
+	}
 	
 	//CRUD Methods for Service Records
 	public ServiceRecord addServiceRecord(ServiceRecord serviceRecord) {
@@ -87,6 +101,14 @@ public class VehicleBUS {
 	
 	public ServiceRecord getServiceRecordById(int id) {
 		return serviceRecordDAO.getServiceRecordById(id);
+	}
+	
+	public ServiceRecord updateServiceRecord(ServiceRecord newRecord) {
+		return serviceRecordDAO.updateServiceRecord(newRecord);
+	}
+	
+	public boolean removeServiceRecord(ServiceRecord record) {
+		return serviceRecordDAO.removeServiceRecord(record);
 	}
 	
 }

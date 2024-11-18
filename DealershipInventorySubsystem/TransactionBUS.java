@@ -28,6 +28,14 @@ public class TransactionBUS {
 		return customerDAO.getCustomerById(id);
 	}
 	
+	public Customer upateCustomer(Customer newCustomer) {
+		return customerDAO.updateCustomer(newCustomer);
+	}
+	
+	public boolean removeCustomer(Customer customer) {
+		return customerDAO.removeCustomer(customer);
+	}
+	
 	//CRUD Methods for transactions
 	public Sale addSale(Sale sale) {
 		return transactionDAO.insertSale(sale);
@@ -57,6 +65,18 @@ public class TransactionBUS {
 		return transactionDAO.getLeaseById(id);
 	}
 	
+	public Sale updateSale(Sale newSale) {
+		return transactionDAO.updateSale(newSale);
+	}
+	
+	public Lease updateLease(Lease newLease) {
+		return transactionDAO.updateLease(newLease);
+	}
+	
+	public boolean removeTransaction(Transaction transaction) {
+		return transactionDAO.removeTransaction(transaction);
+	}
+	
 	//CRUD Methods for Sales Agent
 	public SalesAgent addSalesAgent(SalesAgent agent) {
 		return salesAgentDAO.insertSalesAgent(agent);
@@ -68,6 +88,14 @@ public class TransactionBUS {
 	
 	public SalesAgent getSalesAgentById(int id) {
 		return salesAgentDAO.getSalesAgentById(id);
+	}
+	
+	public SalesAgent updateSalesAgent(SalesAgent newAgent) {
+		return salesAgentDAO.updaSalesAgent(newAgent);
+	}
+	
+	public boolean removeSalesAgent(SalesAgent agent) {
+		return salesAgentDAO.removeSalesAgent(agent);
 	}
 	
 	//CRUD Methods for Commissions
@@ -83,5 +111,13 @@ public class TransactionBUS {
 	
 	public Commission getCommissionById(int transactionId, int agentId) {
 		return commissionDAO.getCommissionById(transactionId, agentId);
+	}
+	
+	public Commission updateCommission(Commission newCommission) {
+		return commissionDAO.updateCommission(newCommission);
+	}
+	
+	public boolean removeCommision(Commission commission) {
+		return commissionDAO.removeCommission(commission);
 	}
 }

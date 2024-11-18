@@ -91,4 +91,69 @@ public class ServiceRecordDAO {
 		
 		return null;
 	}
+	
+	public ServiceRecord updateServiceRecord(ServiceRecord newRecord) {
+		Connection connection = null;
+		String query = "UPDATE ServiceRecord SET VIN = ?, MaintenanceID = ?, date = ?, price = ?, status = ? WHERE RecordID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setString(1, newRecord.getVehicle().getVin());
+			statement.setInt(2, newRecord.getMaintenance().getId());
+			statement.setString(3, newRecord.getDate());
+			statement.setDouble(4, newRecord.getPrice());
+			statement.setString(5, newRecord.getStatus());
+			statement.setInt(6, newRecord.getId());
+			
+			statement.executeUpdate();
+			return newRecord;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	//Returns true on delete / and false on unsuccessful
+	public boolean removeServiceRecord(ServiceRecord record) {
+		Connection connection = null;
+		String query = "DELETE FROM ServiceRecord WHERE RecordID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setInt(1, record.getId());
+			
+			int rs = statement.executeUpdate();
+			
+			if (rs == 0) {
+				return false;
+			}
+			
+			return true;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return false;
+		
+	}
 }

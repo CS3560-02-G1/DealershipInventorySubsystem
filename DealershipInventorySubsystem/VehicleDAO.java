@@ -79,6 +79,40 @@ public class VehicleDAO {
 		return null;
 	}
 	
+	//Updates a vehicle in the database with the new vehicle given. Assumes that the VIN of the vehicle is the same and already inserted.
+	public Vehicle updateVehicle(Vehicle newVehicle) {
+		Connection connection = null;
+		String query = "UPDATE Vehicle SET model = ?, make = ?, year = ?, color = ?, status = ?, currentCondition = ?, price = ? WHERE VIN = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setString(1, newVehicle.getModel());
+			statement.setString(2, newVehicle.getMake());
+			statement.setInt(3, newVehicle.getYear());
+			statement.setString(4, newVehicle.getColor());
+			statement.setString(5, newVehicle.getStatus());
+			statement.setString(6, newVehicle.getCondition());
+			statement.setDouble(7, newVehicle.getPrice());
+			statement.setString(8, newVehicle.getVin());
+			
+			statement.executeUpdate();
+			return newVehicle;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	//Returns true on delete / and false on unsuccessful
 	public boolean removeVehicle(String vin) {
 		Connection connection = null;

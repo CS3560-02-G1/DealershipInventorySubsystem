@@ -30,10 +30,27 @@ public class Tester {
 		agent = transactionBUS.getSalesAgentById(agent.getId());
 		commission = transactionBUS.getCommissionById(sale.getId(), agent.getId());
 		
-		System.out.println(customer.getLastName());
+		System.out.println(customer.getFirstName());
+		customer.setFirstName("pope");
+		transactionBUS.upateCustomer(customer);
+		System.out.println(transactionBUS.getCustomerById(customer.getId()).getFirstName());
+		
 		System.out.println(agent.getFirstName());
-		System.out.println(sale.getId());
+		agent.setFirstName("jerome");
+		transactionBUS.updateSalesAgent(agent);
+		System.out.println(transactionBUS.getSalesAgentById(agent.getId()).getFirstName());
+		
 		System.out.println(commission.getCommissionRate());
+		commission.setCommissionRate(15);
+		transactionBUS.updateCommission(commission);
+		System.out.println(transactionBUS.getCommissionById(sale.getId(), agent.getId()).getCommissionRate());
+		
+		System.out.println(sale.getDate());
+		sale.setDate("10/30/2024");
+		transactionBUS.updateSale(sale);
+		System.out.println(transactionBUS.getSaleById(sale.getId()).getDate());
+		
+		
 		
 		vehicleBUS.removeVehicle(vin);
 		

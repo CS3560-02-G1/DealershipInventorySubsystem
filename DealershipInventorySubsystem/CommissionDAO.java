@@ -9,7 +9,7 @@ import java.sql.Statement;
 public class CommissionDAO {
 	public Commission insertCommission(Commission commission) {
 		Connection connection = null;
-		String query = "INSERT INTO Comission(comissionRate, paymentDate, TransactionID, AgentID) VALUES (?, ?, ?, ?)";
+		String query = "INSERT INTO Commission(commissionRate, paymentDate, TransactionID, AgentID) VALUES (?, ?, ?, ?)";
 		try {
 			connection = JDBCMySQLConnection.getConnection();
 			PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -40,7 +40,7 @@ public class CommissionDAO {
 	
 	public Commission getCommissionById(int transactionId, int agentId) {
 		Connection connection = null;
-		String query = "SELECT * FROM Comission WHERE TransactionID = ? AND AgentID = ?";
+		String query = "SELECT * FROM Commission WHERE TransactionID = ? AND AgentID = ?";
 		try {
 			connection = JDBCMySQLConnection.getConnection();
 			PreparedStatement statement = connection.prepareStatement(query);
@@ -54,7 +54,7 @@ public class CommissionDAO {
 				return null;
 			}
 			
-			double commissionRate = rs.getDouble("comissionRate");
+			double commissionRate = rs.getDouble("commissionRate");
 			String paymentDate = rs.getString("paymentDate");
 			
 			TransactionDAO transactionDAO = new TransactionDAO();
@@ -77,5 +77,69 @@ public class CommissionDAO {
 		}
 		
 		return null;
+	}
+	
+	public Commission updateCommission(Commission newCommission) {
+		Connection connection = null;
+		String query = "UPDATE Commission SET commissionRate = ?, paymentDate = ? WHERE TransactionID = ? AND AgentID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setDouble(1, newCommission.getCommissionRate());
+			statement.setString(2, newCommission.getPaymentDate());
+			statement.setInt(3, newCommission.getTransaction().getId());
+			statement.setInt(4, newCommission.getSalesAgent().getId());
+			
+			statement.executeUpdate();
+			return newCommission;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	//Returns true on delete / and false on unsuccessful
+	public boolean removeCommission(Commission commission) {
+		Connection connection = null;
+		String query = "DELETE FROM Commission WHERE TransactionID = ? AND AgentID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setInt(1, commission.getTransaction().getId());
+			statement.setInt(2, commission.getSalesAgent().getId());
+			
+			int rs = statement.executeUpdate();
+			
+			if (rs == 0) {
+				return false;
+			}
+			
+			return true;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return false;
+		
 	}
 }

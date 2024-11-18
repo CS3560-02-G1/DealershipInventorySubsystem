@@ -80,4 +80,67 @@ public class DeliveryOrderDAO {
 		
 		return null;
 	}
+	
+	public DeliveryOrder updateOrder(DeliveryOrder newOrder) {
+		Connection connection = null;
+		String query = "UPDATE DeliveryOrder SET sourceLocation = ?, status = ?, arrivalDate = ? WHERE DeliveryID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setString(1, newOrder.getSourceLocation());
+			statement.setString(2, newOrder.getStatus());
+			statement.setString(3, newOrder.getArrivalDate());
+			statement.setInt(6, newOrder.getId());
+			
+			statement.executeUpdate();
+			return newOrder;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	//Returns true on delete / and false on unsuccessful
+	public boolean removeOrder(DeliveryOrder order) {
+		Connection connection = null;
+		String query = "DELETE FROM DeliveryOrder WHERE DeliveryID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setInt(1, order.getId());
+			
+			int rs = statement.executeUpdate();
+			
+			if (rs == 0) {
+				return false;
+			}
+			
+			return true;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return false;
+		
+	}
 }

@@ -88,4 +88,69 @@ public class CustomerDAO {
 		
 		return null;
 	}
+	
+	public Customer updateCustomer(Customer newCustomer) {
+		Connection connection = null;
+		String query = "UPDATE Customer SET firstName = ?, lastName = ?, phoneNumber = ?, address = ?, email = ? WHERE CustomerID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setString(1, newCustomer.getFirstName());
+			statement.setString(2, newCustomer.getLastName());
+			statement.setString(3, newCustomer.getPhone());
+			statement.setString(4, newCustomer.getAddress());
+			statement.setString(5, newCustomer.getEmail());
+			statement.setInt(6, newCustomer.getId());
+			
+			statement.executeUpdate();
+			return newCustomer;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	//Returns true on delete / and false on unsuccessful
+	public boolean removeCustomer(Customer customer) {
+		Connection connection = null;
+		String query = "DELETE FROM Customer WHERE CustomerID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setInt(1, customer.getId());
+			
+			int rs = statement.executeUpdate();
+			
+			if (rs == 0) {
+				return false;
+			}
+			
+			return true;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return false;
+		
+	}
 }

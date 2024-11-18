@@ -93,6 +93,72 @@ public class WarrantyDAO {
 		return null;
 	}
 	
+	public Warranty updateWarranty(Warranty newWarranty) {
+		Connection connection = null;
+		String query = "UPDATE Warranty SET VIN = ?, type = ?, duration = ?, policy = ?, price = ?, coverageLimit = ? WHERE WarrantyID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setString(1, newWarranty.getVehicle().getVin());
+			statement.setString(2, newWarranty.getType());
+			statement.setInt(3, newWarranty.getDuration());
+			statement.setString(4, newWarranty.getPolicy());
+			statement.setDouble(5, newWarranty.getPrice());
+			statement.setDouble(6, newWarranty.getCoverageLimit());
+			statement.setInt(7, newWarranty.getId());
+			
+			statement.executeUpdate();
+			return newWarranty;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	//Returns true on delete / and false on unsuccessful
+	public boolean removeWarranty(Warranty warranty) {
+		Connection connection = null;
+		String query = "DELETE FROM Warranty WHERE WarrantyID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setInt(1, warranty.getId());
+			
+			int rs = statement.executeUpdate();
+			
+			if (rs == 0) {
+				return false;
+			}
+			
+			return true;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return false;
+		
+	}
+	
 	public List<Warranty> getAllWarranties(String vin) {
 		List<Warranty> warranties = new ArrayList<>();
 		
