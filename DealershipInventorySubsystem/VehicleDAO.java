@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class VehicleDAO {
 	
@@ -77,6 +79,80 @@ public class VehicleDAO {
 		}
 		
 		return null;
+	}
+	
+	public List<Vehicle> getAllUnsoldVehicles() {
+		List<Vehicle> vehicles = new ArrayList<>();
+		Connection connection = null;
+		String query = "SELECT * FROM Vehicle WHERE status != 'sold'";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			ResultSet rs = statement.executeQuery();
+			
+			while (rs.next()) {
+				String vin = rs.getString("VIN");
+				String model = rs.getString("model");
+				int year = rs.getInt("year");
+				String status = rs.getString("status");
+				String condition = rs.getString("currentCondition");
+				String make = rs.getString("make");
+				String color = rs.getString("color");
+				Double price = rs.getDouble("price");
+				
+				vehicles.add(new Vehicle(vin, model, year, status, condition, make, color, price));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return vehicles;
+	}
+	
+	public List<Vehicle> getAllSoldVehicles() {
+		List<Vehicle> vehicles = new ArrayList<>();
+		Connection connection = null;
+		String query = "SELECT * FROM Vehicle WHERE status = sold";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			ResultSet rs = statement.executeQuery();
+			
+			while (rs.next()) {
+				String vin = rs.getString("VIN");
+				String model = rs.getString("model");
+				int year = rs.getInt("year");
+				String status = rs.getString("status");
+				String condition = rs.getString("currentCondition");
+				String make = rs.getString("make");
+				String color = rs.getString("color");
+				Double price = rs.getDouble("price");
+				
+				vehicles.add(new Vehicle(vin, model, year, status, condition, make, color, price));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return vehicles;
 	}
 	
 	//Updates a vehicle in the database with the new vehicle given. Assumes that the VIN of the vehicle is the same and already inserted.

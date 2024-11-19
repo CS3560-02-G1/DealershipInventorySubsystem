@@ -5,8 +5,19 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TransactionDAO {
+	private VehicleDAO vehicleDAO;
+	private CustomerDAO customerDAO;
+	
+	public TransactionDAO() {
+		vehicleDAO = new VehicleDAO();
+		customerDAO = new CustomerDAO();
+	}
+	
+	
 	public Sale insertSale(Sale sale) {
 		Connection connection = null;
 		String query = "INSERT INTO Sale(TransactionID, downPayment) VALUES (?, ?)";
@@ -96,10 +107,8 @@ public class TransactionDAO {
 			double tax = rs.getDouble("tax");
 			String paymentMethod = rs.getString("paymentMethod");
 			
-			VehicleDAO vehicleDAO = new VehicleDAO();
 			Vehicle vehicle = vehicleDAO.getVehicleById(rs.getString("VIN"));
 			
-			CustomerDAO customerDAO = new CustomerDAO();
 			Customer customer = customerDAO.getCustomerById(rs.getInt("CustomerID"));
 			
 			int downPayment = rs.getInt("downPayment");
@@ -139,10 +148,8 @@ public class TransactionDAO {
 			double tax = rs.getDouble("tax");
 			String paymentMethod = rs.getString("paymentMethod");
 			
-			VehicleDAO vehicleDAO = new VehicleDAO();
 			Vehicle vehicle = vehicleDAO.getVehicleById(rs.getString("VIN"));
 			
-			CustomerDAO customerDAO = new CustomerDAO();
 			Customer customer = customerDAO.getCustomerById(rs.getInt("CustomerID"));
 			
 			int leasePeriod = rs.getInt("leasePeriod");
@@ -229,6 +236,56 @@ public class TransactionDAO {
 		
 		Lease lease = getLeaseById(id);
 		return lease;	//Will return null if lease not found
+	}
+	
+	public List<Transaction> getAllTransactions() {
+		List<Transaction> transactions = new ArrayList<>();
+		Connection connection = null;
+		String query = "SELECT t.transactionID, t.VIN, t.CustomerID, t.date, t.tax, t.paymentMethod, s.downPayment, l.leasePeriod, l.monthlyFee"
+				+ " FROM Transaction t LEFT JOIN Sale s ON t.TransactionID = s.TransactionID LEFT JOIN Lease l ON t.TransactionID = l.TransactionID";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			ResultSet rs = statement.executeQuery();
+			
+			while (rs.next()) {
+				int transactionId = rs.getInt("TransactionID");
+				
+				String vin = rs.getString("VIN");
+				Vehicle vehicle = vehicleDAO.getVehicleById(vin);
+				
+				int customerID = rs.getInt("CustomerID");
+				Customer customer = customerDAO.getCustomerById(customerID);
+				
+				String date = rs.getString("date");
+				double tax = rs.getDouble("tax");
+				String paymentMethod = rs.getString("paymentMethod");
+				
+				// Check if this is a Sale or Lease
+	            Integer downPayment = rs.getObject("downPayment", Integer.class);
+	            
+	            if (downPayment != null) { //Is Sale
+	            	transactions.add(new Sale(transactionId, date, tax, paymentMethod, vehicle, customer, downPayment));
+	            } else { //Else is Lease
+	            	int leasePeriod = rs.getInt("leasePeriod");
+	            	int monthlyFee = rs.getInt("monthlyFee");
+	            	transactions.add(new Lease(date, tax, paymentMethod, vehicle, customer, leasePeriod, monthlyFee));
+	            }
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return transactions;
 	}
 	
 	//Private function to insert a transaction, since a transaction is an abtract class and can't be instantiated

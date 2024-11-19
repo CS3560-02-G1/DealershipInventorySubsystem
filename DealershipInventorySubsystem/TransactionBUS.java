@@ -1,5 +1,7 @@
 package DealershipInventorySubsystem;
 
+import java.util.List;
+
 public class TransactionBUS {
 	private TransactionDAO transactionDAO;
 	private CustomerDAO customerDAO;
@@ -26,6 +28,10 @@ public class TransactionBUS {
 	
 	public Customer getCustomerById(int id) {
 		return customerDAO.getCustomerById(id);
+	}
+	
+	public List<Customer> getAllCustomers() {
+		return customerDAO.getAllCustomers();
 	}
 	
 	public Customer upateCustomer(Customer newCustomer) {
@@ -65,6 +71,10 @@ public class TransactionBUS {
 		return transactionDAO.getLeaseById(id);
 	}
 	
+	public List<Transaction> getAllTransactions() {
+		return transactionDAO.getAllTransactions();
+	}
+	
 	public Sale updateSale(Sale newSale) {
 		return transactionDAO.updateSale(newSale);
 	}
@@ -90,8 +100,12 @@ public class TransactionBUS {
 		return salesAgentDAO.getSalesAgentById(id);
 	}
 	
+	public List<SalesAgent> getAllSalesAgents() {
+		return salesAgentDAO.getAllSalesAgents();
+	}
+	
 	public SalesAgent updateSalesAgent(SalesAgent newAgent) {
-		return salesAgentDAO.updaSalesAgent(newAgent);
+		return salesAgentDAO.updateSalesAgent(newAgent);
 	}
 	
 	public boolean removeSalesAgent(SalesAgent agent) {
@@ -111,6 +125,10 @@ public class TransactionBUS {
 	
 	public Commission getCommissionById(int transactionId, int agentId) {
 		return commissionDAO.getCommissionById(transactionId, agentId);
+	}
+	
+	public List<Commission> getAllCommissionsForTransaction(Transaction transaction) {
+		return commissionDAO.getAllCommissionsForTransaction(transaction);
 	}
 	
 	public Commission updateCommission(Commission newCommission) {

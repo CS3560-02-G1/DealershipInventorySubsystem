@@ -5,8 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import org.w3c.dom.UserDataHandler;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CustomerDAO {
 	public Customer insertCustomer(Customer customer) {
@@ -87,6 +87,41 @@ public class CustomerDAO {
 		}
 		
 		return null;
+	}
+	
+	public List<Customer> getAllCustomers() {
+		List<Customer> customers = new ArrayList<>();
+		Connection connection = null;
+		String query = "SELECT * FROM Customer";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			ResultSet rs = statement.executeQuery();
+			
+			while (rs.next()) {
+				int id = rs.getInt("CustomerID");
+				String firstName = rs.getString("firstName");
+				String lastName = rs.getString("lastName");
+				String phoneNumber = rs.getString("phoneNumber");
+				String address = rs.getString("address");
+				String email = rs.getString("email");
+				
+				customers.add(new Customer(id, firstName, lastName, phoneNumber, address, email));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return customers;
 	}
 	
 	public Customer updateCustomer(Customer newCustomer) {

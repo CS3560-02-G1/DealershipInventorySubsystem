@@ -279,7 +279,7 @@ CREATE TABLE `warranty` (
   `duration` int NOT NULL,
   `policy` varchar(50) NOT NULL,
   `price` double NOT NULL,
-  `coverageLimit` varchar(20) DEFAULT NULL,
+  `coverageLimit` double DEFAULT NULL,
   PRIMARY KEY (`WarrantyID`),
   KEY `VIN` (`VIN`),
   CONSTRAINT `warranty_ibfk_1` FOREIGN KEY (`VIN`) REFERENCES `vehicle` (`VIN`) ON DELETE CASCADE
@@ -304,4 +304,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-18 16:58:22
+-- Dump completed on 2024-11-18 19:29:02

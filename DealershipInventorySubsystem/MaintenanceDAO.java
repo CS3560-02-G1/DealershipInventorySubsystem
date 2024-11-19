@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MaintenanceDAO {
 	
@@ -81,6 +83,38 @@ public class MaintenanceDAO {
 		}
 		
 		return null;
+	}
+	
+	public List<Maintenance> getAllMaintenances() {
+		List<Maintenance> maintenances = new ArrayList<>();
+		Connection connection = null;
+		String query = "SELECT * FROM Maintenance";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			ResultSet rs = statement.executeQuery();
+			
+			while (rs.next()) {
+				int id = rs.getInt("MaintenanceID");
+				String type = rs.getString("type");
+				String details = rs.getString("details");
+				
+				maintenances.add(new Maintenance(id, type, details));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return maintenances;
 	}
 	
 	public Maintenance updateMaintenance(Maintenance newMaintenance) {

@@ -1,12 +1,62 @@
 package DealershipInventorySubsystem;
 
+import java.util.List;
+
 public class Tester {
 	public static void main(String[] args) {
 		VehicleBUS vehicleBUS = new VehicleBUS();
 		TransactionBUS transactionBUS = new TransactionBUS();
 		
+		List<Maintenance> maintenances = vehicleBUS.getAllMaintenances();
+		for (Maintenance maintenance : maintenances) {
+			System.out.println(maintenance.getDetails());
+		}
+		System.out.println();
+		
+		List<Customer> customers = transactionBUS.getAllCustomers();
+		for (Customer customer : customers) {
+			System.out.println(customer.getFirstName() + " " + customer.getLastName());
+		}
+		System.out.println();
+		
+		List<SalesAgent> agents = transactionBUS.getAllSalesAgents();
+		for (SalesAgent agent : agents) {
+			System.out.println(agent.getFirstName() + " " + agent.getLastName());
+		}
+		System.out.println();
+		
 		String vin = "4Y1SL65848Z411439";
-		Vehicle newVehicle = new Vehicle(vin, "Transit 150", 2021, "Placeholder Status", "Mint Condition", "Ford", "White", 31000.0);
+		Vehicle newVehicle = new Vehicle(vin, "Transit 150", 2021, "for sale", "Mint Condition", "Ford", "White", 31000.0);
+		vehicleBUS.addVehicle(newVehicle);
+		
+		vin = "2C9NM25244A491439";
+		Vehicle newVehicle2 = new Vehicle(vin, "Civic", 2020, "for sale", "Mint Condition", "Honda", "Black", 25000.0);
+		vehicleBUS.addVehicle(newVehicle2);
+		
+		List<Vehicle> unsoldVehicles = vehicleBUS.getAllUnsoldVehicles();
+		for (Vehicle vehicle : unsoldVehicles) {
+			System.out.println(vehicle.getVin() + "  " + vehicle.getMake() + "   " + vehicle.getModel());
+		}
+		System.out.println();
+		
+		transactionBUS.addSale(new Sale("11/18/2024", 9.5, "cash", newVehicle2, customers.get(0), 25000));
+		transactionBUS.addSale(new Sale("11/18/2024", 10.5, "cash", newVehicle, customers.get(1), 25000));
+		
+		List<Transaction> transactions = transactionBUS.getAllTransactions();
+		for (Transaction transaction : transactions) {
+			System.out.println(transaction.getVehicle().getVin() + "   " + transaction.getCustomer().getFirstName() + "  " + transaction.getDate());
+		}
+		System.out.println();
+		
+		
+		
+		vehicleBUS.removeVehicle(newVehicle.getVin());
+		vehicleBUS.removeVehicle(newVehicle2.getVin());
+	}
+	
+	private static void testAddUpdate(TransactionBUS transactionBUS, VehicleBUS vehicleBUS) {
+		String vin = "4Y1SL65848Z411439";
+		Vehicle newVehicle = new Vehicle(vin, "Transit 150", 2021, "on sale", "Mint Condition", "Ford", "White", 31000.0);
 		
 		vehicleBUS.addVehicle(newVehicle);
 		newVehicle = vehicleBUS.getVehicleByVIN(vin);
@@ -53,8 +103,5 @@ public class Tester {
 		
 		
 		vehicleBUS.removeVehicle(vin);
-		
-		
-		
 	}
 }

@@ -5,8 +5,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommissionDAO {
+	TransactionDAO transactionDAO;
+	SalesAgentDAO salesAgentDAO;
+	
+	public CommissionDAO() {
+		transactionDAO = new TransactionDAO();
+		salesAgentDAO = new SalesAgentDAO();
+	}
+	
 	public Commission insertCommission(Commission commission) {
 		Connection connection = null;
 		String query = "INSERT INTO Commission(commissionRate, paymentDate, TransactionID, AgentID) VALUES (?, ?, ?, ?)";
@@ -57,10 +67,8 @@ public class CommissionDAO {
 			double commissionRate = rs.getDouble("commissionRate");
 			String paymentDate = rs.getString("paymentDate");
 			
-			TransactionDAO transactionDAO = new TransactionDAO();
 			Transaction transaction = transactionDAO.getTransactionById(transactionId);
 			
-			SalesAgentDAO salesAgentDAO = new SalesAgentDAO();
 			SalesAgent agent = salesAgentDAO.getSalesAgentById(agentId);
 			
 			return new Commission(transaction, agent, commissionRate, paymentDate);
@@ -77,6 +85,41 @@ public class CommissionDAO {
 		}
 		
 		return null;
+	}
+	
+	public List<Commission> getAllCommissionsForTransaction(Transaction transaction) {
+		List<Commission> commissions = new ArrayList<>();
+		Connection connection = null;
+		String query = "SELECT * FROM Commission WHERE TransactionID = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setInt(1, transaction.getId());
+			
+			ResultSet rs = statement.executeQuery();
+			
+			while (rs.next()) {
+				double commissionRate = rs.getDouble("commissionRate");
+				String paymentDate = rs.getString("paymentDate");
+				
+				SalesAgent agent = salesAgentDAO.getSalesAgentById(rs.getInt("AgentID"));
+				
+				commissions.add(new Commission(transaction, agent, commissionRate, paymentDate));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return commissions;
 	}
 	
 	public Commission updateCommission(Commission newCommission) {

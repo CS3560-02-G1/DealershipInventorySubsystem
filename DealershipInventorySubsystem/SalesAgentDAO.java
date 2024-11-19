@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SalesAgentDAO {
 	public SalesAgent insertSalesAgent(SalesAgent agent) {
@@ -85,7 +87,41 @@ public class SalesAgentDAO {
 		return null;
 	}
 	
-	public SalesAgent updaSalesAgent(SalesAgent newAgent) {
+	public List<SalesAgent> getAllSalesAgents() {
+		List<SalesAgent> salesAgents = new ArrayList<>();
+		Connection connection = null;
+		String query = "SELECT * FROM SalesAgent";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			ResultSet rs = statement.executeQuery();
+			
+			while (rs.next()) {
+				int id = rs.getInt("AgentID");
+				String firstName = rs.getString("firstName");
+				String lastName = rs.getString("lastName");
+				String email = rs.getString("email");
+				String phoneNumber = rs.getString("phoneNumber");
+				
+				salesAgents.add(new SalesAgent(id, firstName, lastName, email, phoneNumber));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return salesAgents;
+	}
+	
+	public SalesAgent updateSalesAgent(SalesAgent newAgent) {
 		Connection connection = null;
 		String query = "UPDATE SalesAgent SET firstName = ?, lastName = ?, email = ?, phoneNumber = ? WHERE AgentID = ?";
 		try {

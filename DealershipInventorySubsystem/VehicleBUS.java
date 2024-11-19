@@ -20,6 +20,14 @@ public class VehicleBUS {
 		return vehicleDAO.getVehicleById(vin);
 	}
 	
+	public List<Vehicle> getAllUnsoldVehicles() {
+		return vehicleDAO.getAllUnsoldVehicles();
+	}
+	
+	public List<Vehicle> getAllSoldVehicles() {
+		return vehicleDAO.getAllSoldVehicles();
+	}
+	
 	public Vehicle addVehicle(String vin, String model, int year, String status, String condition, String make, String color, double price) {
 		Vehicle vehicle = new Vehicle(vin, model, year, status, condition, make, color, price);
 		return vehicleDAO.insertVehicle(vehicle);
@@ -79,6 +87,10 @@ public class VehicleBUS {
 		return maintenanceDAO.getMaintenanceById(id);
 	}
 	
+	public List<Maintenance> getAllMaintenances() {
+		return maintenanceDAO.getAllMaintenances();
+	}
+	
 	public Maintenance updateMaintenance(Maintenance newMaintenance) {
 		return maintenanceDAO.updateMaintenance(newMaintenance);
 	}
@@ -101,6 +113,10 @@ public class VehicleBUS {
 	
 	public ServiceRecord getServiceRecordById(int id) {
 		return serviceRecordDAO.getServiceRecordById(id);
+	}
+	
+	public List<ServiceRecord> getAllServiceRecordsForVehicle(Vehicle vehicle) {
+		return serviceRecordDAO.getAllServiceRecordsForVehicle(vehicle);
 	}
 	
 	public ServiceRecord updateServiceRecord(ServiceRecord newRecord) {

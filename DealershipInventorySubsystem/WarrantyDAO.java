@@ -93,6 +93,43 @@ public class WarrantyDAO {
 		return null;
 	}
 	
+	public List<Warranty> getAllWarrantiesForVehicle(Vehicle vehicle) {
+		List<Warranty> warranties = new ArrayList<>();
+		Connection connection = null;
+		String query = "SELECT * FROM Warranty WHERE VIN = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			
+			statement.setString(1, vehicle.getVin());
+			
+			ResultSet rs = statement.executeQuery();
+			
+			while (rs.next()) {
+				int id = rs.getInt("WarrantyID");
+				String type = rs.getString("type");
+				int duration = rs.getInt("duration");
+				String policy = rs.getString("policy");
+				double price = rs.getDouble("price");
+				double coverageLimit = rs.getDouble("coverageLimit");
+				
+				warranties.add(new Warranty(id, type, duration, policy, price, coverageLimit, vehicle));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return warranties;
+	}
+	
 	public Warranty updateWarranty(Warranty newWarranty) {
 		Connection connection = null;
 		String query = "UPDATE Warranty SET VIN = ?, type = ?, duration = ?, policy = ?, price = ?, coverageLimit = ? WHERE WarrantyID = ?";

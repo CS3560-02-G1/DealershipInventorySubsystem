@@ -5,8 +5,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServiceRecordDAO {
+	VehicleDAO vehicleDAO;
+	MaintenanceDAO maintenanceDAO;
+	
+	public ServiceRecordDAO() {
+		vehicleDAO = new VehicleDAO();
+		maintenanceDAO = new MaintenanceDAO();
+	}
+	
 	public ServiceRecord insertServiceRecord(ServiceRecord record) {
 		Connection connection = null;
 		String query = "INSERT INTO ServiceRecord(date, price, status, VIN, MaintenanceID) VALUES (?, ?, ?, ?, ?)";
@@ -69,11 +79,9 @@ public class ServiceRecordDAO {
 			String date = rs.getString("date");
 			Double price = rs.getDouble("price");
 			String status = rs.getString("status");
-			
-			VehicleDAO vehicleDAO = new VehicleDAO();
+
 			Vehicle vehicle = vehicleDAO.getVehicleById(rs.getString("VIN"));
 			
-			MaintenanceDAO maintenanceDAO = new MaintenanceDAO();
 			Maintenance maintenance = maintenanceDAO.getMaintenanceById(rs.getInt("MaintenanceID"));
 			
 			return new ServiceRecord(recordId, date, price, status, vehicle, maintenance);
@@ -90,6 +98,42 @@ public class ServiceRecordDAO {
 		}
 		
 		return null;
+	}
+	
+	public List<ServiceRecord> getAllServiceRecordsForVehicle(Vehicle vehicle) {
+		List<ServiceRecord> serviceRecords = new ArrayList<>();
+		Connection connection = null;
+		String query = "SELECT * FROM ServiceRecord WHERE VIN = ?";
+		try {
+			connection = JDBCMySQLConnection.getConnection();
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setString(1, vehicle.getVin());
+			
+			ResultSet rs = statement.executeQuery();
+			
+			while (rs.next()) {
+				int recordId = rs.getInt("RecordID");
+				String date = rs.getString("date");
+				Double price = rs.getDouble("price");
+				String status = rs.getString("status");
+				
+				Maintenance maintenance = maintenanceDAO.getMaintenanceById(rs.getInt("MaintenanceID"));
+				
+				serviceRecords.add(new ServiceRecord(recordId, date, price, status, vehicle, maintenance));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return serviceRecords;
 	}
 	
 	public ServiceRecord updateServiceRecord(ServiceRecord newRecord) {
