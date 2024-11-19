@@ -3,7 +3,6 @@ package DealershipInventorySubsystem;
 // represents a vehicle in dealership inventory
 public class Vehicle {
     private String vin; // vehicle identification number
-    private DeliveryOrder order;
     private String model; // model of vehicle
     private int year; // manufacturing year
     private String status; // available or sold
@@ -33,14 +32,6 @@ public class Vehicle {
     // checks if vehicle is new
     public boolean isNew() {
         return condition.equalsIgnoreCase("new");
-    }
-    
-    public void setDeliveryOrder(DeliveryOrder order) {
-    	this.order = order;
-    }
-    
-    public DeliveryOrder getDeliveryOrder() {
-    	return order;
     }
 
     // returns age of vehicle based on current year
