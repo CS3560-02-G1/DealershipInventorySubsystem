@@ -394,13 +394,13 @@ class InventoryView {
             }
         });
         
-        viewDetailsButton.addActionListener(_ -> new VehicleInfoView(vehicles.get(GUIManager.selectedIndex)));
+        viewDetailsButton.addActionListener(e -> new VehicleInfoView(vehicles.get(GUIManager.selectedIndex)));
 
-        addVehicleButton.addActionListener(_ -> new VehicleEditor(null, null, this));
+        addVehicleButton.addActionListener(e -> new VehicleEditor(null, null, this));
         
-        manageVehicleButton.addActionListener(_ -> new VehicleEditor(vehicles.get(GUIManager.selectedIndex), GUIManager.selectedIndex, this));
+        manageVehicleButton.addActionListener(e -> new VehicleEditor(vehicles.get(GUIManager.selectedIndex), GUIManager.selectedIndex, this));
         
-        removeVehicleButton.addActionListener(_ -> new ConfirmationBox(new ConfirmationBox.OnResults() {
+        removeVehicleButton.addActionListener(e -> new ConfirmationBox(new ConfirmationBox.OnResults() {
             public void onConfirm() {
                 if (GUIManager.selectedIndex != null) {
                     vehicleBUS.removeVehicle(vehicles.get(GUIManager.selectedIndex).getVin());
@@ -412,7 +412,7 @@ class InventoryView {
             }
         }));
 
-        markAsSoldButton.addActionListener(_ -> new ConfirmationBox(new ConfirmationBox.OnResults() {
+        markAsSoldButton.addActionListener(e -> new ConfirmationBox(new ConfirmationBox.OnResults() {
             public void onConfirm() {
                 Vehicle selectedVehicle = vehicles.get(GUIManager.selectedIndex);
                 selectedVehicle.updateStatus("sold");
@@ -420,7 +420,7 @@ class InventoryView {
             }
         }));
 
-        scheduleMaintenanceButton.addActionListener(_ -> new ConfirmationBox(new ConfirmationBox.OnResults() {
+        scheduleMaintenanceButton.addActionListener(e -> new ConfirmationBox(new ConfirmationBox.OnResults() {
             public void onConfirm() {
                 System.out.println("Scheduled for Maintenance!");
             }
@@ -618,12 +618,12 @@ class VehicleEditor {
 
         padding = 10;
         if (vehicle == null) {
-            this.vehicle = new Vehicle(null, null, 0, "Placeholder Status", null, null, null, 0.0);
+            this.vehicle = new Vehicle(null, null, 0, "For Sale", null, null, null, 0.0);
         } else {
             this.vehicle = vehicle;
         }
 
-        originalVin = vehicle.getVin();
+        originalVin = this.vehicle.getVin();
         vinChanged = false;
 
         ShowVehicleEditor();

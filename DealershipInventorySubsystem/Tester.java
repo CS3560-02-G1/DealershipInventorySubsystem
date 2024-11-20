@@ -50,8 +50,18 @@ public class Tester {
 		
 		
 		
-		vehicleBUS.removeVehicle(newVehicle.getVin());
-		vehicleBUS.removeVehicle(newVehicle2.getVin());
+		//vehicleBUS.removeVehicle(newVehicle.getVin());
+		//vehicleBUS.removeVehicle(newVehicle2.getVin());
+	}
+	
+	private static void addVehicles(VehicleBUS vehicleBUS) {
+		String vin = "4Y1SL65848Z411439";
+		Vehicle newVehicle = new Vehicle(vin, "Transit 150", 2021, "for sale", "Mint Condition", "Ford", "White", 31000.0);
+		vehicleBUS.addVehicle(newVehicle);
+		
+		vin = "2C9NM25244A491439";
+		Vehicle newVehicle2 = new Vehicle(vin, "Civic", 2020, "for sale", "Mint Condition", "Honda", "Black", 25000.0);
+		vehicleBUS.addVehicle(newVehicle2);
 	}
 	
 	private static void testAddUpdate(TransactionBUS transactionBUS, VehicleBUS vehicleBUS) {
