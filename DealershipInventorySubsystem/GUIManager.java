@@ -402,13 +402,21 @@ class InventoryView {
         
         removeVehicleButton.addActionListener(_ -> new ConfirmationBox(new ConfirmationBox.OnResults() {
             public void onConfirm() {
-                System.out.println("Removed!");
+                if (GUIManager.selectedIndex != null) {
+                    vehicleBUS.removeVehicle(vehicles.get(GUIManager.selectedIndex).getVin());
+                    vehicles.remove((int)GUIManager.selectedIndex);
+                    GUIManager.selectedIndex = null;
+
+                    updateVehicleList();
+                }
             }
         }));
 
         markAsSoldButton.addActionListener(_ -> new ConfirmationBox(new ConfirmationBox.OnResults() {
             public void onConfirm() {
-                System.out.println("Marked as Sold!");
+                Vehicle selectedVehicle = vehicles.get(GUIManager.selectedIndex);
+                selectedVehicle.updateStatus("sold");
+                vehicleBUS.updateVehicle(selectedVehicle);
             }
         }));
 
