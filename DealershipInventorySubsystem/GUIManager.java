@@ -50,7 +50,9 @@ public class GUIManager {
         MANAGE_VEHICLE,
         REMOVE_VEHICLE,
         MARK_AS_SOLD,
-        SCHEDULE_MAINTENANCE
+        SCHEDULE_MAINTENANCE,
+        ADD_WARRANTY,
+        VIEW_TRANSACTION_HISTORY
     }
     
     public enum Actors {
@@ -112,10 +114,10 @@ public class GUIManager {
          *  MAINTENANCE       __          __            __             __            __              __
          */
         int[][] PERMISSION_MATRIX = {
-            {1, 1, 1, 1, 1, 1},
-            {1, 0, 0, 0, 0, 0},
-            {1, 1, 1, 1, 1, 0},
-            {1, 0, 0, 0, 0, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 0, 0, 0, 0, 0, 0, 0},
+            {1, 1, 1, 1, 1, 0, 1, 1},
+            {1, 0, 0, 0, 0, 1, 1, 1},
         };
         return PERMISSION_MATRIX[permissionLevel.ordinal()][permission.ordinal()] == 1;
     }
@@ -320,9 +322,13 @@ class InventoryView {
         scheduleMaintenanceButton.setVisible(GUIManager.getPermissions(GUIManager.Permissions.SCHEDULE_MAINTENANCE));
         JButton manageVehicleButton = new JButton("Manage Vehicle");
         manageVehicleButton.setVisible(GUIManager.getPermissions(GUIManager.Permissions.MANAGE_VEHICLE));
+        JButton addWarrantyButton = new JButton("Add Warranty");
+        manageVehicleButton.setVisible(GUIManager.getPermissions(GUIManager.Permissions.ADD_WARRANTY));
+        JButton viewTransactionHistoryButton = new JButton("View Transaction History");
+        manageVehicleButton.setVisible(GUIManager.getPermissions(GUIManager.Permissions.VIEW_TRANSACTION_HISTORY));
 
-        JButton[] buttons = {viewDetailsButton, addVehicleButton, manageVehicleButton, removeVehicleButton, markAsSoldButton, scheduleMaintenanceButton};
-        JButton[] requireVehicleSelected = {viewDetailsButton, manageVehicleButton, removeVehicleButton, markAsSoldButton, scheduleMaintenanceButton};
+        JButton[] buttons = {viewDetailsButton, addVehicleButton, manageVehicleButton, removeVehicleButton, markAsSoldButton, scheduleMaintenanceButton, addWarrantyButton, viewTransactionHistoryButton};
+        JButton[] requireVehicleSelected = {viewDetailsButton, manageVehicleButton, removeVehicleButton, markAsSoldButton, scheduleMaintenanceButton, addWarrantyButton};
         for (int i = 0; i < requireVehicleSelected.length; i++)
             requireVehicleSelected[i].setEnabled(false);
         
@@ -341,7 +347,7 @@ class InventoryView {
 
         //region Add listeners
         list.addMouseListener(new MouseAdapter() {
-            @Override 
+            @Override
             public void mouseExited(MouseEvent e) { 
                 GUIManager.hoveredIndex = -1; 
                 list.repaint(); 
@@ -422,6 +428,15 @@ class InventoryView {
         scheduleMaintenanceButton.addActionListener(e -> {
         	Vehicle selectedVehicle = vehicles.get(GUIManager.selectedIndex);
         	new MaintenanceForm(selectedVehicle);
+        });
+        
+        addWarrantyButton.addActionListener(e -> {
+        	Vehicle selectedVehicle = vehicles.get(GUIManager.selectedIndex);
+        	new WarrantyForm(selectedVehicle);
+        });
+        
+        viewTransactionHistoryButton.addActionListener(e -> {
+        	new TransactionHistoryView();
         });
 
         //endregion

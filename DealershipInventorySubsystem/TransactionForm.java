@@ -13,7 +13,7 @@ public class TransactionForm extends JFrame{
     private JTextField transactionDateField, transactionPriceField, transactionMethodField;
     private TransactionBUS transactionBUS;
     private VehicleBUS vehicleBUS;
-    private JButton saveButton;
+    private JButton saveButton, cancelButton;
     private Vehicle vehicle;
     
     private JComboBox<String> transactionTypeDropdown;
@@ -125,13 +125,19 @@ public class TransactionForm extends JFrame{
         transactionMethodField = new JTextField();
         transactionDetailsPanel.add(transactionMethodField);
         
+        JPanel buttonsPanel = new JPanel();
         saveButton = new JButton("Save Transaction");
         saveButton.addActionListener(e -> saveTransaction());
+        
+        cancelButton = new JButton("Cancel");
+        cancelButton.addActionListener(e -> dispose());
+        buttonsPanel.add(saveButton);
+        buttonsPanel.add(cancelButton);
      
         
         add(mainPanel, BorderLayout.CENTER);
         add(transactionDetailsPanel, BorderLayout.NORTH);
-        add(saveButton, BorderLayout.SOUTH);
+        add(buttonsPanel, BorderLayout.SOUTH);
         
         
         // Fetch and populate Customers and SalesAgents
