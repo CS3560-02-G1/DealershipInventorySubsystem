@@ -418,6 +418,7 @@ class InventoryView {
         	new TransactionForm(selectedVehicle, this);
         });
 
+
         scheduleMaintenanceButton.addActionListener(e -> {
         	Vehicle selectedVehicle = vehicles.get(GUIManager.selectedIndex);
         	new MaintenanceForm(selectedVehicle);
