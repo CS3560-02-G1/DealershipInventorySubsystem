@@ -121,7 +121,7 @@ public class VehicleDAO {
 	public List<Vehicle> getAllSoldVehicles() {
 		List<Vehicle> vehicles = new ArrayList<>();
 		Connection connection = null;
-		String query = "SELECT * FROM Vehicle WHERE status = sold";
+		String query = "SELECT * FROM Vehicle WHERE status = 'sold'";
 		try {
 			connection = JDBCMySQLConnection.getConnection();
 			PreparedStatement statement = connection.prepareStatement(query);

@@ -176,6 +176,7 @@ class InventoryView {
     }
 
     public Object[] getVehicleList() {
+    	this.vehicles = vehicleBUS.getAllUnsoldVehicles();
         vehicleStrings = getVehicleStrings(vehicles);
         String filterString = currentSearch.equals(SEARCH_PROMPT) ? null : currentSearch;
         vehicleIndexMap = new Integer[vehicles.size()];
@@ -412,26 +413,15 @@ class InventoryView {
             }
         }));
 
-        markAsSoldButton.addActionListener(e -> new ConfirmationBox(new ConfirmationBox.OnResults() {
-            public void onConfirm() {
-                Vehicle selectedVehicle = vehicles.get(GUIManager.selectedIndex);
-                selectedVehicle.updateStatus("sold");
-                vehicleBUS.updateVehicle(selectedVehicle);
-            }
-        }));
+        markAsSoldButton.addActionListener(e -> {
+        	Vehicle selectedVehicle = vehicles.get(GUIManager.selectedIndex);
+        	new TransactionForm(selectedVehicle, this);
+        });
 
-        scheduleMaintenanceButton.addActionListener(e -> new ConfirmationBox(new ConfirmationBox.OnResults() {
-            public void onConfirm() {
-                System.out.println("Scheduled for Maintenance!");
-            }
-        }, String.format(
-            "<html><b>Schedule Maintenance For:</b><br/><span style='font-size:75%%'>%s %d %s %s<br/>VIN: %s</span>",
-            vehicles.get(GUIManager.selectedIndex).getColor(),
-            vehicles.get(GUIManager.selectedIndex).getYear(),
-            vehicles.get(GUIManager.selectedIndex).getMake(),
-            vehicles.get(GUIManager.selectedIndex).getModel(),
-            vehicles.get(GUIManager.selectedIndex).getVin()
-        )));
+        scheduleMaintenanceButton.addActionListener(e -> {
+        	Vehicle selectedVehicle = vehicles.get(GUIManager.selectedIndex);
+        	new MaintenanceForm(selectedVehicle);
+        });
 
         //endregion
 

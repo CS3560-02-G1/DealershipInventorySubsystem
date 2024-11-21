@@ -69,8 +69,10 @@ public class TransactionDAO {
 			statement.setInt(2, lease.getLeasePeriod());
 			statement.setInt(3, lease.getMonthlyFee());
 
-			int newId = statement.executeUpdate();
-			lease.setId(newId);
+			statement.executeUpdate();
+			
+			lease.setId(transactionId);
+			
 			return lease;
 			
 		} catch(SQLException e) {
