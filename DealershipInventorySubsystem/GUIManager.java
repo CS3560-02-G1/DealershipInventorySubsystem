@@ -110,6 +110,7 @@ public class GUIManager {
         /* Permission matrix structure:
          * 
          *               VIEW_DETAILS ADD_VEHICLE MANAGE_VEHICLE REMOVE_VEHICLE MARK_AS_SOLD SCHEDULE_MAINTENANCE
+         *  ALL               __          __            __             __            __              __
          *  CUSTOMER          __          __            __             __            __              __
          *  SALES             __          __            __             __            __              __
          *  MAINTENANCE       __          __            __             __            __              __
@@ -209,7 +210,7 @@ class InventoryView {
                     vehicles.get(i).getVin(),
                     vehicles.get(i).getStatus()
                 );
-                if (vehicleDetails.contains(filterString)) {
+                if (vehicleDetails.toLowerCase().contains(filterString.toLowerCase())) {
                     vehicleIndexMap[i] = numIncludedStrings;
                     stringsToInclude[numIncludedStrings++] = vehicleStrings[i];
                 } else {
