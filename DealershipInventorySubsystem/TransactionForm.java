@@ -247,7 +247,7 @@ public class TransactionForm extends JFrame{
         
         
         JOptionPane.showMessageDialog(this, "Transaction saved successfully!");
-        parentView.updateVehicleList();
+        parentView.ShowInventoryMenu();
         dispose();
     }
     

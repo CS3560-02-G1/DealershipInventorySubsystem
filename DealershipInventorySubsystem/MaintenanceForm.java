@@ -76,7 +76,7 @@ public class MaintenanceForm extends JFrame {
     public class MaintenanceInputDialog extends JDialog {
         private JTextField dateField;
         private JTextField priceField;
-        private JTextField statusField;
+        private JComboBox<String> statusComboBox;
         private JButton saveButton, cancelButton;
         private VehicleBUS vehicleBUS;
 
@@ -103,8 +103,8 @@ public class MaintenanceForm extends JFrame {
 
             // Status combo box
             add(new JLabel("Status:"));
-            statusField = new JTextField("");
-            add(statusField);
+            statusComboBox = new JComboBox<>(new String[]{"Pending", "In Progress", "Completed"});
+            add(statusComboBox);
 
             // Save and cancel buttons
             saveButton = new JButton("Save");
@@ -121,7 +121,7 @@ public class MaintenanceForm extends JFrame {
             try {
                 String date = dateField.getText().trim();
                 double price = Double.parseDouble(priceField.getText().trim());
-                String status = statusField.getText().trim();
+                String status = (String) statusComboBox.getSelectedItem();
 
                 ServiceRecord serviceRecord = new ServiceRecord(date, price, status, vehicle, maintenance);
 

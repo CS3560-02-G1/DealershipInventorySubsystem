@@ -22,6 +22,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.DefaultTableModel;
 
 
 /*
@@ -454,12 +455,14 @@ class VehicleInfoView {
     JFrame frame;
     Vehicle vehicle;
     int padding;
+    VehicleBUS vehicleBUS;
 
     public VehicleInfoView(Vehicle vehicle, JFrame frame) {
         this.frame = frame;
 
         padding = 10;
         this.vehicle = vehicle;
+        this.vehicleBUS = new VehicleBUS();
 
         ShowVehicleView();
     }
@@ -504,17 +507,49 @@ class VehicleInfoView {
     
             frame.add(detailLabels[i], GUIManager.getGridBagConst(0, i + 2, 2, 1, true, false, padding));
         }
+        
+        //Warranty Table
+        String[] warrantyColumns = {"ID", "Type", "Duration", "Policy", "Price", "Coverage Limit"};
+        DefaultTableModel warrantyTableModel = new DefaultTableModel(warrantyColumns, 0) {
+        	@Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        JTable warrantyTable = new JTable(warrantyTableModel);
+        warrantyTable.setFillsViewportHeight(true);
+        warrantyTable.setPreferredScrollableViewportSize(new Dimension(500, 100));
+        loadWarrantyData(warrantyTableModel); // Populate warranty data
+        JScrollPane warrantyScrollPane = new JScrollPane(warrantyTable);
+        frame.add(new JLabel("<html><b>Warranties:</b>"), GUIManager.getGridBagConst(0, 10, 2, 1, true, false, padding));
+        frame.add(warrantyScrollPane, GUIManager.getGridBagConst(0, 11, 2, 1, true, true, padding));
+        
+        //ServiceRecord Table
+        String[] serviceColumns = {"ID", "Date", "Price", "Status", "MaintenanceID"};
+        DefaultTableModel serviceTableModel = new DefaultTableModel(serviceColumns, 0) {
+        	@Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        JTable serviceTable = new JTable(serviceTableModel);
+        serviceTable.setFillsViewportHeight(true);
+        serviceTable.setPreferredScrollableViewportSize(new Dimension(500, 100));
+        loadServiceData(serviceTableModel); // Populate service data
+        JScrollPane serviceScrollPane = new JScrollPane(serviceTable);
+        frame.add(new JLabel("<html><b>Service Records:</b>"), GUIManager.getGridBagConst(0, 12, 2, 1, true, false, padding));
+        frame.add(serviceScrollPane, GUIManager.getGridBagConst(0, 13, 2, 1, true, true, padding));
 
         JSeparator exitSeparator = new JSeparator(JSeparator.HORIZONTAL);
         exitSeparator.setForeground(Color.BLACK);
-        frame.add(exitSeparator, GUIManager.getGridBagConst(0, 11, 2, 1, true, false, padding));
+        frame.add(exitSeparator, GUIManager.getGridBagConst(0, 14, 2, 1, true, false, padding));
 
         JButton exitButton = new JButton("Exit");
         exitButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
         exitButton.setPreferredSize(new Dimension(0, 50));
         Font exitFont = new Font("Arial", Font.BOLD, 20);
         exitButton.setFont(exitFont);
-        frame.add(exitButton, GUIManager.getGridBagConst(0, 12, 2, 1, true, true, padding));
+        frame.add(exitButton, GUIManager.getGridBagConst(0, 15, 2, 1, true, true, padding));
 
         exitButton.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -524,6 +559,21 @@ class VehicleInfoView {
 
         frame.pack();
         frame.repaint();
+    }
+    
+    private void loadWarrantyData(DefaultTableModel model) {
+    	List<Warranty> warranties = vehicleBUS.getAllWarranties(this.vehicle.getVin());
+    	for (Warranty warranty : warranties) {
+    		System.out.println(warranty.getId());
+    		model.addRow(new Object[] {warranty.getId(), warranty.getType(), warranty.getDuration(), warranty.getPolicy(), warranty.getPrice(), warranty.getCoverageLimit()});
+    	}
+    }
+    
+    private void loadServiceData(DefaultTableModel model) {
+    	List<ServiceRecord> serviceRecords = vehicleBUS.getAllServiceRecordsForVehicle(this.vehicle);
+    	for (ServiceRecord record : serviceRecords) {
+    		model.addRow(new Object[] {record.getId(), record.getDate(), record.getPrice(), record.getStatus(), record.getMaintenance().getId()});
+    	}
     }
 }
 
